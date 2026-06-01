@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architectural Review: Aurora AI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 40px;
+            background-color: #f9f9fb;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        h1 {
+            color: #111827;
+            font-size: 2.2em;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #1f2937;
+            font-size: 1.6em;
+            margin-top: 40px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+        h3 {
+            color: #374151;
+            font-size: 1.25em;
+            margin-top: 30px;
+        }
+        p { margin-bottom: 16px; }
+        ul, ol { margin-bottom: 20px; padding-left: 24px; }
+        li { margin-bottom: 8px; }
+        .meta-info {
+            background-color: #f3f4f6;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        .meta-info strong { color: #111827; }
+        .priority-badge {
+            display: inline-block;
+            background-color: #fee2e2;
+            color: #991b1b;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 15px;
+        }
+        .urgency-badge {
+            display: inline-block;
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .priority-critical { background-color: #7f1d1d; color: white; }
+        .urgency-immediate { background-color: #b45309; color: white; }
+        code {
+            background-color: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.9em;
+            color: #db2777;
+        }
+        a { color: #2563eb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .implementation-box {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .implementation-box h4 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #1e3a8a;
+            font-size: 1.05em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Cognizant_logo_2022.svg" alt="Cognizant Logo" style="height: 28px; margin-bottom: 24px;">
+    <h1>Architectural Review: Aurora AI (<code>dev-hassan</code> Branch)</h1>
+    
+    <div class="meta-info">
+        <p><strong>Reviewers:</strong></p>
+        <ul>
+            <li><strong>Indrani Sen</strong> (Head of AI Engineering UK&I, Cognizant AI & Analytics Practice)</li>
+            <li><strong>Aegis</strong> (Cognitive Code Sentinel, powered by Claude Opus 4.6)</li>
+            <li><strong>Archytas</strong> (Topology & Systems Architecture Agent, powered by Claude Opus 4.6)</li>
+        </ul>
+        <p><strong>Date:</strong> June 1, 2026</p>
+        <p><strong>Scope:</strong> Architecture, modularity, security posture, and user experience of the Aurora AI branch—assessed against frontier Agentic AI standards within the Azure AI Foundry ecosystem.</p>
+    </div>
+
+    <h2>1. Where We Stand</h2>
+    <p>Hassan has done a genuinely impressive job getting Aurora to this point. The domain logic works, the Databricks integration is solid, the brief renders real trade data, and the whole thing runs end-to-end on Azure App Service. For a V0, this is exactly what you want to see—working software that proves the concept and unblocks the business conversation.</p>
+    <p>What follows is not a list of things that are wrong. It is a roadmap for turning a strong proof-of-concept into something we can confidently put in front of 80+ traders across five markets. The patterns below are drawn from how frontier AI organisations (Anthropic, Google, OpenAI) structure their production systems, and from Microsoft's own guidance on building enterprise agentic applications.</p>
+
+    <h2>2. Observations and Opportunities</h2>
+
+    <!-- 2.1 -->
+    <h3>2.1. Moving from Static SQL to Agentic Data Access</h3>
+    <div>
+        <span class="priority-badge">Priority: High</span>
+        <span class="urgency-badge">Urgency: High</span>
+    </div>
+    <p>Hassan built the data layer around two modules: <code>server/dbsql/client.ts</code> (a thin wrapper over the Databricks SQL REST API) and <code>server/dbsql/pull.ts</code> (the orchestrator that maps each business prompt to a bundle of SQL files). There are 10 handwritten <code>.sql</code> queries on disk—<code>sales_daily.sql</code>, <code>brands_top10.sql</code>, <code>margin_daily.sql</code>, and so on—each executed with fixed parameter bindings (<code>:market</code>, <code>:week_start</code>, <code>:week_end</code>). The <code>pull.ts</code> file uses a <code>switch</code> statement to route prompts like <code>PROMPT_BRIEF_SALES_DATA</code> to the right SQL bundle.</p>
+    <p>The queries themselves are well-written. The multi-CTE joins across <code>fact_billed_sale_and_return_v1</code>, <code>dim_product_v1</code>, and <code>dim_country_v1</code> are clean and performant. But they are static—and that is the constraint. If a trader asks "what is the return rate by price band for new customers?", the system has nowhere to go because no <code>.sql</code> file covers that combination. The model's intelligence is capped at whatever questions Hassan anticipated when writing the queries.</p>
+    <p>The natural next step is to connect the Databricks catalogue to the LLM via the <strong>Model Context Protocol (MCP)</strong>—specifically through Databricks Genie as an MCP tool inside the Azure AI Foundry agent definition. This lets the agent inspect the schema, write its own SQL, run it, and self-correct if it hits a syntax error. Hassan would no longer need to maintain a growing library of <code>.sql</code> files, and the system could handle genuinely novel questions from the business.</p>
+
+    <!-- 2.2 -->
+    <h3>2.2. Separating Infrastructure from Business Logic</h3>
+    <div>
+        <span class="priority-badge">Priority: High</span>
+        <span class="urgency-badge">Urgency: Medium</span>
+    </div>
+    <p>Right now, <code>server/proxy.ts</code> is doing a lot of heavy lifting. In 377 lines, it handles: Azure Managed Identity token acquisition (lines 42–66), HTTP proxying with socket-error retries to the Foundry endpoint (lines 94–165), a JSON cache API with a hardcoded <code>MARKET_TO_REGION_CODE</code> dictionary (lines 171–177), brief serving from the local filesystem (lines 210–264), a week-listing endpoint (lines 269–320), a facts endpoint (lines 322–345), and static SPA hosting (lines 347–361). That is six distinct responsibilities in one file.</p>
+    <p>This works fine at the current scale, and keeping everything together made it easier for Hassan to ship quickly. But as we add new markets, new agent capabilities, or new data sources, modifying this file becomes increasingly risky—a change to how briefs are cached could accidentally break the auth flow, and vice versa.</p>
+    <p>The goal is to pull these apart: a thin <strong>Control Plane</strong> that handles authentication, token management, and generic routing, and a separate <strong>Capability Plane</strong> where domain logic (brief caching, agent orchestration, market mapping) lives as pluggable modules. That way, Hassan—or any developer who follows—can add a new agent capability without touching the auth middleware. The Azure AI Foundry Responses API is designed exactly for this pattern: the proxy becomes a simple pass-through, and the intelligence lives in Foundry.</p>
+
+    <!-- 2.3 -->
+    <h3>2.3. Streaming Instead of Blocking</h3>
+    <div>
+        <span class="priority-badge">Priority: Medium</span>
+        <span class="urgency-badge">Urgency: Medium</span>
+    </div>
+    <p>The Foundry proxy currently reads the entire LLM response into memory with <code>await response.text()</code> (line 141) and sends it back to the browser in one shot via <code>res.send(responseBody)</code> (line 152). Hassan has already set a 300-second timeout (<code>TIMEOUT_MS = 300_000</code>, line 30), which tells me he knows these agentic calls can take a while.</p>
+    <p>The problem is that during those 300 seconds, the browser gets nothing—no progress, no partial content, no sign that the system is working. From the user's perspective, the screen just hangs. Worse, Azure App Service load balancers typically drop idle connections after about 4 minutes, so longer agent runs risk a 504 before the response even arrives.</p>
+    <p>The fix is straightforward: switch to <strong>Server-Sent Events (SSE)</strong>. Instead of buffering the whole response, the proxy streams <code>delta</code> chunks as the model generates them. The user sees text appearing in real-time, the connection stays alive, and the UX goes from "is it broken?" to "I can see it thinking." Every major AI product—ChatGPT, Gemini, Claude—uses this pattern for exactly this reason.</p>
+
+    <div class="implementation-box">
+        <h4>Implementation Guidance for Hassan:</h4>
+        <p>To wire this up cleanly with the upcoming MCP integration, you'll need three pieces:</p>
+        <ol>
+            <li><strong>The Backend Config:</strong> In <code>proxy.ts</code>, instead of <code>res.send()</code>, set the headers to <code>Content-Type: text/event-stream</code>, <code>Cache-Control: no-cache</code>, and <code>Connection: keep-alive</code>. You must call <code>res.flushHeaders()</code> immediately to force the load balancer to open the stream and prevent a 504 timeout.</li>
+            <li><strong>The Foundry API Call:</strong> Pass <code>stream: true</code> to the Azure AI Foundry SDK. As chunks arrive from Foundry, write them directly to the Express response stream using <code>res.write(`data: ${JSON.stringify(chunk)}\n\n`)</code>.</li>
+            <li><strong>Tool/MCP Telemetry:</strong> It's not just text! As the agent invokes MCP tools (like the Databricks Genie), stream those events down too. Emit <code>tool_call</code> chunks when the agent starts a query, and <code>tool_result</code> chunks when it finishes. This lets the React frontend render a beautiful "Agent is querying Databricks..." loading state while the LLM thinks.</li>
+        </ol>
+    </div>
+
+    <!-- 2.4 -->
+    <h3>2.4. Locking Down the Front Door</h3>
+    <div>
+        <span class="priority-badge priority-critical">Priority: Critical</span>
+        <span class="urgency-badge urgency-immediate">Urgency: Immediate</span>
+    </div>
+    <p>Hassan has done a solid job on <em>outbound</em> auth. The <code>DefaultAzureCredential</code> flow for acquiring Managed Identity tokens is well-implemented, and the API-key fallback for local development is pragmatic. Token caching with auto-refresh (lines 60–63) is a nice touch.</p>
+    <p>The gap is on the <em>inbound</em> side. The <code>/api/foundry</code> route (line 94) accepts requests from anyone—no JWT validation, no user identity check, no authentication middleware whatsoever. The frontend even has a <code>MockDataBadge</code> labelled "Demo user" in <code>App.tsx</code> (lines 127–129), which confirms user identity is hardcoded. If this endpoint is reachable from the internet, anyone can call it and run up the Azure AI token bill—or worse, access sensitive trade data.</p>
+    <p>Before this goes to production, we need a proper <strong>Zero-Trust On-Behalf-Of (OBO)</strong> flow. The client acquires an Entra ID JWT via the Teams SDK, sends it as a Bearer token, and the proxy validates the signature against Microsoft's JWKS endpoint before forwarding anything to Foundry. This is table stakes for any enterprise app that calls a paid AI service.</p>
+
+    <!-- 2.5 -->
+    <h3>2.5. Rethinking the User Experience</h3>
+    <div>
+        <span class="priority-badge">Priority: High</span>
+        <span class="urgency-badge">Urgency: Medium</span>
+    </div>
+    <p>The Monday Brief currently renders as a single, vertically scrolling page inside <code>brief.tsx</code> (717 lines). Everything—the headline block, region selector, daily roll-up table, four metric grids (Demand, Mix, Sales by price type, Margin), the editorial "Why" commentary, suggested actions, a follow-up input, and a "Browse by week" archive—is stacked top to bottom in one long column. The navigation rail in <code>App.tsx</code> offers just two routes: "Monday Brief" and "Chat", and switching between them is a full page swap.</p>
+
+    <p>For an initial build, this editorial "newspaper" layout makes perfect sense—it is easy to reason about and easy to build. But for an interactive trading tool that 80+ users will rely on daily, it creates some real friction:</p>
+
+    <ul>
+        <li><strong>Scrolling fatigue.</strong> Traders looking for margin data have to scroll past the headline, the daily table, the demand grid, the mix grid, and the sales grid before they reach what they need. The Nielsen Norman Group's research on dashboard design shows that users abandon dense, scroll-heavy layouts when key metrics are not visible within the initial viewport.</li>
+        <li><strong>No responsive breakpoints.</strong> The daily roll-up table in <code>daily.tsx</code> sets <code>minWidth: 900</code> and falls back to horizontal scrolling on smaller screens. There are no CSS media queries anywhere in <code>styles.css</code>. Traders checking the brief on a tablet during a morning commute will have a frustrating experience.</li>
+        <li><strong>Chat as a separate world.</strong> The current Brief-to-Chat transition is a full page swap (<code>route === 'chat'</code> in <code>App.tsx</code>, line 232). If a trader spots an anomaly in the margin data and wants to ask a follow-up question, they lose sight of the data entirely when they switch to chat. A persistent, collapsible chat panel alongside the brief would be far more natural.</li>
+        <li><strong>Data density without escape hatches.</strong> The daily table is impressively comprehensive—TY, Budget, MYF, LY, LW, L4W, plus delta rows—but showing everything at once can overwhelm rather than inform. A sensible default would be TY plus one comparison row (vs LY), with a "Show all comparisons" toggle for power users who want the full matrix.</li>
+        <li><strong>Metric cards could be more interactive.</strong> The 4-column metric grid uses a fixed <code>gridTemplateColumns: 'repeat(4, 1fr)'</code> layout. Each cell shows a value, a sparkline, and two delta comparisons. This is good, but the cells are passive—hovering or clicking does nothing. Elevating each metric to an interactive card that reveals a mini-breakdown on hover (or tap) would let traders drill into the numbers without leaving the page.</li>
+    </ul>
+
+    <p>The north star here is a <strong>tabbed dashboard</strong> where the headline KPI strip stays pinned at the top, and the remaining content is organised into tabs ("Daily Breakdown" | "Demand & Mix" | "Margin" | "Commentary & Actions"). Hassan has already built all the underlying components—this is primarily a layout refactor, not a rebuild.</p>
+
+    <h2>3. References</h2>
+    <p>To save you some digging, here are the official references and design standards that shape the patterns discussed above.</p>
+    
+    <p><strong>Architecture &amp; Data Access</strong></p>
+    <ol>
+        <li><strong>Model Context Protocol (MCP)</strong> — The open standard for connecting data sources to AI agents.<br>
+        <a href="https://modelcontextprotocol.io/docs/concepts/architecture" target="_blank">MCP Architecture Overview</a></li>
+        
+        <li><strong>Azure AI Foundry Agent Service</strong> — Microsoft's framework for deploying tool-backed agents with MCP support.<br>
+        <a href="https://learn.microsoft.com/en-us/azure/ai-services/agents/overview" target="_blank">Azure AI Foundry Agent Service Overview</a></li>
+    </ol>
+
+    <p><strong>Streaming &amp; Latency</strong></p>
+    <ol start="3">
+        <li><strong>Server-Sent Events for AI Streaming</strong> — Why and how modern AI products stream responses to mask latency.<br>
+        <a href="https://sdk.vercel.ai/docs/foundations/streaming" target="_blank">Vercel AI SDK: Foundations of Streaming</a></li>
+    </ol>
+
+    <p><strong>Security</strong></p>
+    <ol start="4">
+        <li><strong>Zero-Trust Protected Web APIs</strong> — Microsoft's definitive guide to securing middle-tier APIs with Entra ID.<br>
+        <a href="https://learn.microsoft.com/en-us/entra/identity-platform/scenario-protected-web-api-overview" target="_blank">Microsoft Entra: Protected Web API Scenario</a></li>
+    </ol>
+
+    <p><strong>User Experience &amp; Dashboard Design</strong></p>
+    <ol start="5">
+        <li><strong>Progressive Disclosure</strong> — The UX principle of revealing complexity gradually, directly applicable to the tabbed dashboard recommendation.<br>
+        <a href="https://www.nngroup.com/articles/progressive-disclosure/" target="_blank">Nielsen Norman Group: Progressive Disclosure</a></li>
+        
+        <li><strong>Dashboard Design: Preattentive Attributes</strong> — Research on how users scan data-dense dashboards, supporting the card-based metric layout recommendation.<br>
+        <a href="https://www.nngroup.com/articles/dashboards-preattentive/" target="_blank">Nielsen Norman Group: Dashboard Design with Preattentive Visual Properties</a></li>
+
+        <li><strong>Responsive Design</strong> — Foundational guidance on building layouts that adapt to different viewport sizes.<br>
+        <a href="https://www.nngroup.com/articles/responsive-web-design-definition/" target="_blank">Nielsen Norman Group: Responsive Web Design</a></li>
+
+        <li><strong>Microsoft Fluent 2 Design System</strong> — The design language used across Microsoft 365 and Teams, relevant for ensuring visual consistency in enterprise applications.<br>
+        <a href="https://fluent2.microsoft.design/" target="_blank">Microsoft Fluent 2</a></li>
+    </ol>
+
+    <h2>4. What Comes Next</h2>
+    <p>Hassan has built something that works, and that is no small thing. The domain is proven, the data pipeline is running, and the stakeholders can already see real value. That is the hardest part—and it is done.</p>
+    <p>The next phase is about hardening this foundation. Locking down inbound auth is the most urgent piece. After that, wiring up MCP so the agent can reason over the data dynamically will be the biggest unlock in terms of product value. The streaming and UX improvements can follow in parallel.</p>
+    <p>I am genuinely looking forward to seeing where Hassan takes this next.</p>
+</div>
+
+</body>
+</html>
