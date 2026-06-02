@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognizant | Strategic AI Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --cognizant-blue: #0033A0; --brand-dark: #0A1128; --bg-color: #FAFAFA; --surface-color: #FFFFFF; --text-main: #1F2937; --text-muted: #6B7280; --text-light: #9CA3AF; --border-color: #E5E7EB; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+        header { background-color: var(--surface-color); padding: 24px 48px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .logo { height: 28px; }
+        .header-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-light); }
+        .master-nav { display: flex; justify-content: center; gap: 48px; border-bottom: 1px solid var(--border-color); background-color: var(--surface-color); position: sticky; top: 0; z-index: 100; }
+        .master-tab { padding: 16px 8px; font-size: 15px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+        .master-tab:hover { color: var(--brand-dark); }
+        .master-tab.active { color: var(--cognizant-blue); border-bottom: 2px solid var(--cognizant-blue); }
+        .wrapper { width: 100%; display: flex; justify-content: center; padding: 48px 4%; }
+        .content-container { width: 100%; max-width: 1600px; }
+        .view-section { display: none; animation: fadeIn 0.4s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 32px; font-weight: 400; color: var(--brand-dark); margin-bottom: 16px; letter-spacing: -0.02em; }
+        h2 { font-size: 20px; font-weight: 500; color: var(--brand-dark); margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); margin-top: 48px; }
+        h3 { font-size: 18px; font-weight: 500; color: var(--brand-dark); margin-bottom: 16px; }
+        .intro-text { color: var(--text-muted); font-size: 16px; line-height: 1.6; max-width: 900px; margin-bottom: 24px; }
+        .methodology-infographic { display: flex; justify-content: space-between; align-items: flex-start; background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 8px; padding: 40px; margin: 32px 0 48px 0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .method-step { flex: 1; display: flex; flex-direction: column; padding: 0 16px; position: relative; }
+        .method-step.highlight { border-left: 2px solid var(--cognizant-blue); padding-left: 24px; }
+        .step-number { font-size: 32px; font-weight: 300; color: #CBD5E1; margin-bottom: 12px; line-height: 1; }
+        .highlight .step-number { color: var(--cognizant-blue); }
+        .step-title { font-size: 15px; font-weight: 600; color: var(--brand-dark); margin-bottom: 8px; }
+        .step-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .step-arrow { font-size: 24px; color: #E2E8F0; margin: 12px 16px 0 16px; }
+        .metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-bottom: 64px; }
+        .metric-card { background: var(--surface-color); padding: 24px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .metric-value { font-size: 48px; font-weight: 300; color: var(--cognizant-blue); line-height: 1; margin-bottom: 8px; }
+        .metric-label { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .target-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .target-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; border-top: 3px solid var(--cognizant-blue); display: flex; flex-direction: column; gap: 16px; cursor: pointer; transition: all 0.2s ease; position: relative; }
+        .target-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.05); border-color: #CBD5E1; }
+        .target-card::after { content: 'Click to view deep dive →'; font-size: 12px; color: var(--cognizant-blue); font-weight: 500; margin-top: auto; display: block; opacity: 0; transition: opacity 0.2s; }
+        .target-card:hover::after { opacity: 1; }
+        .target-title { font-size: 16px; font-weight: 600; color: var(--brand-dark); }
+        .target-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); font-weight: 600; margin-bottom: 4px; }
+        .target-list { list-style: none; margin-left: 0; font-size: 14px; color: var(--text-muted); }
+        .target-list li { margin-bottom: 6px; position: relative; padding-left: 16px; }
+        .target-list li::before { content: "•"; position: absolute; left: 0; color: var(--cognizant-blue); font-weight: bold; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 17, 40, 0.4); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: #FFF; width: 95%; max-width: 1000px; border-radius: 8px; padding: 48px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 48px rgba(0,0,0,0.1); transform: translateY(20px); transition: transform 0.3s ease; }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        .close-btn { position: absolute; top: 24px; right: 24px; cursor: pointer; font-size: 24px; color: var(--text-light); border: none; background: none; }
+        .close-btn:hover { color: var(--brand-dark); }
+        .modal-body p { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.7; }
+        .infographic { display: flex; align-items: center; justify-content: space-between; background: #F8FAFC; border: 1px solid var(--border-color); border-radius: 8px; padding: 48px 32px; margin: 32px 0; }
+        .info-col { display: flex; flex-direction: column; gap: 16px; flex: 1; align-items: center; }
+        .info-col.engine { background: #FFFFFF; border: 1px dashed #CBD5E1; border-radius: 8px; padding: 24px; width: 100%; }
+        .info-col-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-light); margin-bottom: 8px; text-align: center; font-weight: 600; width: 100%; }
+        .info-node { background: #FFF; border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 4px; text-align: center; width: 100%; max-width: 220px; font-size: 13px; font-weight: 500; color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .info-node.agent { border-color: var(--cognizant-blue); color: var(--cognizant-blue); border-left: 4px solid var(--cognizant-blue); }
+        .info-arrow { font-size: 24px; color: #CBD5E1; padding: 0 16px; }
+        .sub-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+        .sub-tab { padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+        .sub-tab:hover { border-color: var(--text-light); color: var(--brand-dark); }
+        .sub-tab.active { background: var(--brand-dark); color: #FFFFFF; border-color: var(--brand-dark); }
+        .table-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 24px; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { padding: 12px 16px 12px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light); font-weight: 600; border-bottom: 1px solid var(--border-color); text-align: left; }
+        td { padding: 16px 16px 16px 0; border-bottom: 1px solid var(--border-color); font-size: 13px; vertical-align: top; color: var(--text-muted); line-height: 1.5; }
+        tr:last-child td { border-bottom: none; }
+        .col-proc { width: 15%; font-weight: 500; color: var(--brand-dark); }
+        .col-desc { width: 25%; }
+        .col-disp { width: 10%; }
+        .col-stack { width: 20%; font-weight: 500; color: var(--brand-dark); }
+        .col-rationale { width: 30%; color: #4B5563; font-size: 12px;}
+        .function-tag { display: block; font-size: 11px; color: var(--text-light); margin-top: 4px; font-weight: 400; }
+        .badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #F1F5F9; border: 1px solid #E2E8F0; color: #475569; }
+        .badge.pro-code { background: var(--cognizant-blue); color: white; border-color: var(--cognizant-blue); }
+        .cluster-content { display: none; }
+        .cluster-content.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Cognizant_logo_2022.svg" alt="Cognizant Logo" class="logo">
+        <div class="header-title">Capability Assessment</div>
+    </header>
+
+    <div class="master-nav">
+        <div class="master-tab active" onclick="switchMainView('exec-summary')">Executive Summary</div>
+        <div class="master-tab" onclick="switchMainView('detailed-analysis')">Detailed Analysis</div>
+    </div>
+
+    <div class="wrapper">
+        <div class="content-container">
+            
+            <div id="exec-summary" class="view-section active">
+                <h1 style="margin-top: 0;">Strategic Approach & Methodology</h1>
+                <p class="intro-text">To ensure strategic alignment and maximize return on existing enterprise investments, a rigorous four-phase technical assessment methodology was applied to the initial backlog. Rather than defaulting to custom AI engineering, an <strong>"Out-Of-The-Box (OOB) First"</strong> philosophy was enforced. Only workflows exhibiting high cognitive complexity, cross-domain orchestration, and unstructured data reasoning were qualified for custom Agentic AI investment.</p>
+                
+                <div class="methodology-infographic">
+                    <div class="method-step"><div class="step-number">01</div><div class="step-title">Ingest & Normalize</div><div class="step-desc">Comprehensive audit and clustering of 99 unstructured processes across 9 corporate functions.</div></div><div class="step-arrow">→</div>
+                    <div class="method-step"><div class="step-number">02</div><div class="step-title">Native Filtering</div><div class="step-desc">Elimination of redundant initiatives that overlap with the incoming Dynamics 365 Frontier roadmap.</div></div><div class="step-arrow">→</div>
+                    <div class="method-step"><div class="step-number">03</div><div class="step-title">OOB Rationalization</div><div class="step-desc">Rigorous mapping of remaining workflows to standard Power Platform & M365 Copilot capabilities.</div></div><div class="step-arrow">→</div>
+                    <div class="method-step highlight"><div class="step-number">04</div><div class="step-title">Agentic Qualification</div><div class="step-desc">Isolation of high-complexity orchestrations demanding a custom "Agent Foundry" architecture.</div></div>
+                </div>
+
+                <h2>Assessment Results</h2>
+                <div class="metrics-row">
+                    <div class="metric-card"><div class="metric-value">99</div><div class="metric-label">Total Processes Analyzed</div></div>
+                    <div class="metric-card"><div class="metric-value">90<span style="font-size:24px">%</span></div><div class="metric-label">Standard OOB (Microsoft)</div></div>
+                    <div class="metric-card"><div class="metric-value">10<span style="font-size:24px">%</span></div><div class="metric-label">Agentic AI (Pro-Code)</div></div>
+                </div>
+                
+                <h2>Target State: Agentic AI Use Cases</h2>
+                <div class="target-grid">
+                    <div class="target-card" onclick="openModal('modal-rdec')"><div class="target-title">1. R&D Tax Claims Pipeline</div><div><div class="target-section-title">Architecture</div><ul class="target-list"><li>Data Connector Agent (DevOps)</li><li>Tax Policy Evaluation Agent</li></ul></div></div>
+                    <div class="target-card" onclick="openModal('modal-audit')"><div class="target-title">2. Autonomous Controls Testing</div><div><div class="target-section-title">Architecture</div><ul class="target-list"><li>Evidence Collection Agent</li><li>Vision & Audit Verification Models</li></ul></div></div>
+                    <div class="target-card" onclick="openModal('modal-capex')"><div class="target-title">3. Capex vs. Opex Determination</div><div><div class="target-section-title">Architecture</div><ul class="target-list"><li>Precedent Analysis Agent (Vector DB)</li><li>IFRS Policy Compliance Agent</li></ul></div></div>
+                    <div class="target-card" onclick="openModal('modal-legal')"><div class="target-title">4. Active Contract Negotiation</div><div><div class="target-section-title">Architecture</div><ul class="target-list"><li>Multi-domain evaluation (Legal/Finance)</li><li>Negotiator Synthesis Agent</li></ul></div></div>
+                    <div class="target-card" onclick="openModal('modal-horizon')"><div class="target-title">5. Regulatory Horizon Scanning</div><div><div class="target-section-title">Architecture</div><ul class="target-list"><li>Continuous Global Search Agent</li><li>Corporate Impact Knowledge-Graph</li></ul></div></div>
+                    <div class="target-card" onclick="openModal('modal-tprm')"><div class="target-title">6. Third Party Risk Mgmt (TPRM)</div><div><div class="target-section-title">Architecture</div><ul class="target-list"><li>External API Risk Integrator Agent</li><li>Mitigation Planner Agent</li></ul></div></div>
+                    <div class="target-card" onclick="openModal('modal-rfx')"><div class="target-title">7. Strategic RFx Evaluation</div><div><div class="target-section-title">Architecture</div><ul class="target-list"><li>Unstructured RFP Parser Agent</li><li>Commercial Evaluation Agent</li></ul></div></div>
+                    <div class="target-card" onclick="openModal('modal-financial')"><div class="target-title">8. Autonomous Audit Commentary</div><div><div class="target-section-title">Architecture</div><ul class="target-list"><li>Financial Variance Agent</li><li>Stakeholder Context Gatherer</li></ul></div></div>
+                </div>
+            </div>
+
+            <div id="detailed-analysis" class="view-section">
+                <h1>Process Backlog & Architectural Rationale</h1>
+                <p class="intro-text">Detailed technical disposition of each process, including the specific target technology stack and the underlying architectural rationale supporting the recommendation.</p>
+                <div class="sub-nav" id="cluster-sub-nav"></div>
+                <div id="cluster-content-area"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODALS WITH FULL CONTENT RESTORED -->
+    <div class="modal-overlay" id="modal-rdec" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="document.getElementById('modal-rdec').classList.remove('active')">✕</button>
+            <h1>R&D Tax Claims Pipeline</h1>
+            <h3>Future State Agentic Experience</h3>
+            <p>Currently, compiling R&D tax claims requires manual parsing of disparate developer repositories, leading to a high risk of under-claiming due to missed technical subtleties. The proposed future state utilizes a Multi-Agent architecture to autonomously traverse repositories, retrieve code specifications, and map them against complex HMRC guidelines.</p>
+            <div class="infographic">
+                <div class="info-col">
+                    <div class="info-col-title">Unstructured Inputs</div>
+                    <div class="info-node">Azure DevOps Repos</div>
+                    <div class="info-node">Jira Tickets</div>
+                    <div class="info-node">Confluence Specs</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col engine">
+                    <div class="info-col-title">Agent Foundry Core</div>
+                    <div class="info-node agent">Data Connector Agent</div>
+                    <div class="info-node agent">Tax Policy Assessor</div>
+                    <div class="info-node agent">Confidence Scorer</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col">
+                    <div class="info-col-title">Business Value</div>
+                    <div class="info-node">HMRC Draft Dossier</div>
+                    <div class="info-node">Interactive Claim Portal</div>
+                </div>
+            </div>
+            <p><strong>UX Design:</strong> Tax and FP&A professionals access a secure web portal. By selecting a fiscal quarter, the system generates a draft RDEC claim dossier. The UI highlights specific Jira tickets, offering an interactive "confidence score" explaining exactly why the work qualifies for R&D tax relief.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-audit" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="document.getElementById('modal-audit').classList.remove('active')">✕</button>
+            <h1>Autonomous Controls Testing</h1>
+            <h3>Future State Agentic Experience</h3>
+            <p>Internal Audits are currently restricted by sample-based, manual post-mortems. By deploying an autonomous Agentic workforce capable of collecting evidence via email and visually interpreting screenshots, the business transitions to a continuous monitoring paradigm.</p>
+            <div class="infographic">
+                <div class="info-col">
+                    <div class="info-col-title">Evidence Gathering</div>
+                    <div class="info-node">D365 System Logs</div>
+                    <div class="info-node">Stakeholder Emails</div>
+                    <div class="info-node">Approval Screenshots</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col engine">
+                    <div class="info-col-title">Multi-Modal Agents</div>
+                    <div class="info-node agent">Evidence Collector Agent</div>
+                    <div class="info-node agent">Vision/OCR Agent</div>
+                    <div class="info-node agent">Audit Verification Agent</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col">
+                    <div class="info-col-title">Actionable Outputs</div>
+                    <div class="info-node">Control Efficacy Report</div>
+                    <div class="info-node">Remediation Drafts</div>
+                </div>
+            </div>
+            <p><strong>UX Design:</strong> Auditors interact with a real-time assurance dashboard. When a control failure is detected, the dashboard flags it and provides a fully assembled evidence pack along with a drafted remediation action plan for the auditor to review and approve.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-capex" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="document.getElementById('modal-capex').classList.remove('active')">✕</button>
+            <h1>Capex vs. Opex Determination</h1>
+            <h3>Future State Agentic Experience</h3>
+            <p>Determining capitalization treatment involves nuanced IFRS rules and reliance on historical precedent. A semantic reasoning engine powered by a custom vector database ensures instant, consistent financial structuring without draining FP&A resources.</p>
+            <div class="infographic">
+                <div class="info-col">
+                    <div class="info-col-title">Contextual Data</div>
+                    <div class="info-node">Project Business Case</div>
+                    <div class="info-node">Supplier SOWs</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col engine">
+                    <div class="info-col-title">Semantic Reasoning</div>
+                    <div class="info-node agent">Precedent Analysis Agent</div>
+                    <div class="info-node agent">IFRS Compliance Agent</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col">
+                    <div class="info-col-title">Financial Action</div>
+                    <div class="info-node">Recommended Split</div>
+                    <div class="info-node">Policy Citations</div>
+                </div>
+            </div>
+            <p><strong>UX Design:</strong> Finance stakeholders utilize a conversational interface embedded within Microsoft Teams. A user uploads a project business case. The agent instantly returns a recommended accounting treatment (Capex/Opex split) along with hyperlinked citations to internal policies.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-legal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="document.getElementById('modal-legal').classList.remove('active')">✕</button>
+            <h1>Active Contract Negotiation</h1>
+            <h3>Future State Agentic Experience</h3>
+            <p>Legal, Finance, and Procurement currently review contracts in silos. An Agentic orchestration allows multiple domain-specific agents to collaboratively review a single document, synthesizing a mathematically optimized redline that balances risk and speed.</p>
+            <div class="infographic">
+                <div class="info-col">
+                    <div class="info-col-title">Third-Party Input</div>
+                    <div class="info-node">Counterparty MSA</div>
+                    <div class="info-node">Data Processing Agmt</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col engine">
+                    <div class="info-col-title">Collaborative Review</div>
+                    <div class="info-node agent">Legal Risk Agent</div>
+                    <div class="info-node agent">Commercial Terms Agent</div>
+                    <div class="info-node agent">Negotiator Synthesizer</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col">
+                    <div class="info-col-title">Automated Redline</div>
+                    <div class="info-node">Track-Changes .docx</div>
+                    <div class="info-node">Clause Rationale Sidebar</div>
+                </div>
+            </div>
+            <p><strong>UX Design:</strong> Within minutes of uploading an MSA, the system provides a fully redlined `.docx` file. An accompanying sidebar interface explains the rationale for each redline (e.g., "Indemnity cap exceeds playbook threshold") and suggests alternative fallback clauses.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-horizon" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="document.getElementById('modal-horizon').classList.remove('active')">✕</button>
+            <h1>Regulatory Horizon Scanning</h1>
+            <h3>Future State Agentic Experience</h3>
+            <p>Monitoring global regulations and mapping them to internal corporate structures requires massive manual effort. A continuous background execution system filters external internet noise and cross-references it against internal corporate knowledge graphs to issue proactive alerts.</p>
+            <div class="infographic">
+                <div class="info-col">
+                    <div class="info-col-title">External Noise</div>
+                    <div class="info-node">Global RSS Feeds</div>
+                    <div class="info-node">Regulatory DBs</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col engine">
+                    <div class="info-col-title">Continuous Mapping</div>
+                    <div class="info-node agent">Global Search Agent</div>
+                    <div class="info-node agent">Impact Assessor Agent</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col">
+                    <div class="info-col-title">Proactive Alerting</div>
+                    <div class="info-node">Weekly Digest Email</div>
+                    <div class="info-node">Risk Surface Alerts</div>
+                </div>
+            </div>
+            <p><strong>UX Design:</strong> Legal and Compliance leaders receive a proactive, synthesized weekly digest in their inbox. The digest surfaces emerging regulations, quantifies the specific risk surface (e.g., "Impacts EU pricing"), and suggests preventative policy updates.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-tprm" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="document.getElementById('modal-tprm').classList.remove('active')">✕</button>
+            <h1>Third Party Risk Management</h1>
+            <h3>Future State Agentic Experience</h3>
+            <p>TPRM relies on disjointed external APIs (e.g., D&B, Ecovadis) and static spreadsheets. A multi-agent framework continuously pulls external risk data, evaluates it against internal vendor tiering, and autonomously drafts risk mitigation plans for procurement.</p>
+            <div class="infographic">
+                <div class="info-col">
+                    <div class="info-col-title">External Risk APIs</div>
+                    <div class="info-node">Ecovadis / D&B Data</div>
+                    <div class="info-node">ComplyAdvantage</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col engine">
+                    <div class="info-col-title">Risk Synthesis</div>
+                    <div class="info-node agent">API Integrator Agent</div>
+                    <div class="info-node agent">Mitigation Planner Agent</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col">
+                    <div class="info-col-title">Vendor Action</div>
+                    <div class="info-node">Vendor Risk Dashboard</div>
+                    <div class="info-node">Drafted Mitigation Plans</div>
+                </div>
+            </div>
+            <p><strong>UX Design:</strong> Procurement teams access a continuously updated vendor risk dashboard. When an external API flags a tier-1 supplier risk, the agent proactively drafts a mitigation strategy and alerts the vendor manager for review.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-rfx" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="document.getElementById('modal-rfx').classList.remove('active')">✕</button>
+            <h1>Strategic RFx Evaluation (Tendering)</h1>
+            <h3>Future State Agentic Experience</h3>
+            <p>Evaluating complex supplier proposals (RFPs) is a heavily manual reading exercise prone to human bias. The future state deploys specialized agents to parse unstructured vendor proposals and score them dynamically against complex procurement rubrics.</p>
+            <div class="infographic">
+                <div class="info-col">
+                    <div class="info-col-title">Vendor Submissions</div>
+                    <div class="info-node">Unstructured RFPs (.pdf)</div>
+                    <div class="info-node">Pricing Matrices (.xlsx)</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col engine">
+                    <div class="info-col-title">Multi-Agent Scoring</div>
+                    <div class="info-node agent">RFP Parser Agent</div>
+                    <div class="info-node agent">Commercial Evaluation Agent</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col">
+                    <div class="info-col-title">Procurement Output</div>
+                    <div class="info-node">Comparative Scorecard</div>
+                    <div class="info-node">Confidence Metrics</div>
+                </div>
+            </div>
+            <p><strong>UX Design:</strong> The Procurement Lead drags and drops 10 different vendor RFP responses into the portal. Within minutes, the system outputs a unified side-by-side comparative scorecard highlighting technical deviations and commercial variances.</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-financial" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-btn" onclick="document.getElementById('modal-financial').classList.remove('active')">✕</button>
+            <h1>Autonomous Audit Commentary</h1>
+            <h3>Future State Agentic Experience</h3>
+            <p>Building detailed commentary for PWC at half-year (HY) and full-year (FY) requires Finance teams to manually chase business owners for explanations on P&L variances. The Agentic solution acts as an autonomous financial analyst, spotting variances and retrieving context automatically.</p>
+            <div class="infographic">
+                <div class="info-col">
+                    <div class="info-col-title">Financial Data</div>
+                    <div class="info-node">ERP P&L Variances</div>
+                    <div class="info-node">Business Owner Emails</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col engine">
+                    <div class="info-col-title">Financial Reasoning</div>
+                    <div class="info-node agent">Variance Analysis Agent</div>
+                    <div class="info-node agent">Context Gatherer Agent</div>
+                </div>
+                <div class="info-arrow">→</div>
+                <div class="info-col">
+                    <div class="info-col-title">Reporting Output</div>
+                    <div class="info-node">PWC Audit Commentary</div>
+                    <div class="info-node">Hyperlinked Evidence</div>
+                </div>
+            </div>
+            <p><strong>UX Design:</strong> The system identifies a £1M variance in marketing spend. An agent automatically messages the Marketing Director on Teams to ask for context. It then synthesizes the reply into formal audit commentary, presenting a complete draft to the Financial Controller.</p>
+        </div>
+    </div>
+
+    <script>
+        const data = {"Cluster A: Contract Intelligence": [{"Function": "Finance", "Process": "Contract review submission portal", "Description": "Using a set timetable throughout the reporting year, prompts a designated list of persons across Corporate functions to collate and submit any new ...", "Effort": "1-2 hours per week for Group during reporting periods, plus additional time taken for submitters to pull everything together which could be streamlined by a submission portal.", "Category": "OOB (Document)", "Stack": "SharePoint Premium / AI Builder", "Rationale": "Leverages pre-built document intelligence models to extract structured metadata from contracts without custom LLM orchestration."}, {"Function": "Finance", "Process": "Contract data collation", "Description": "Convert contract data into structured inputs that can be used to pre\u2011populate FY27 onwards forecasts.", "Effort": "1hr per week minimum", "Category": "OOB (Document)", "Stack": "SharePoint Premium / AI Builder", "Rationale": "Leverages pre-built document intelligence models to extract structured metadata from contracts without custom LLM orchestration."}, {"Function": "Procurement", "Process": "CSOF Creation / contract approval", "Description": "Creates a Contract Sign off Form (CSOF) which summarises the key commercial terms of an agreement ready for pre-execution approvals", "Effort": "30 mins per contract", "Category": "OOB (Document)", "Stack": "SharePoint Premium / AI Builder", "Rationale": "Leverages pre-built document intelligence models to extract structured metadata from contracts without custom LLM orchestration."}, {"Function": "Procurement", "Process": "Contract Database / Reporting", "Description": "Scrapes agreements for meta data (similar to what's used in CSOF creation) and stores it so that reporting / notifications can be generated", "Effort": "N/A - a complete CLM tool/solution does not currently exist", "Category": "OOB (Document)", "Stack": "SharePoint Premium / AI Builder", "Rationale": "Leverages pre-built document intelligence models to extract structured metadata from contracts without custom LLM orchestration."}, {"Function": "Procurement", "Process": "Contract negotiation (commercial elements)", "Description": "Manual process to review the contractual terms and conditions to determine where changes are needed in order to closer align to our company standar...", "Effort": "Difficult to quantify as depends of contract length, type of goods services/being purchased, cost of goods/services being purchased, risk appetite.", "Category": "Agentic AI (Pro)", "Stack": "Agent Foundry (LangGraph, Azure OpenAI, Vector DB)", "Rationale": "Requires complex semantic reasoning, multi-step API retrieval across non-Microsoft systems, and multi-domain orchestration exceeding OOB limits."}, {"Function": "Legal", "Process": "Contract review", "Description": "Review, mark up and negotiate supplier agreements (MSAs, DPAs, SOWs, amendments), identify risks and align to ASOS playbook positions.", "Effort": "~5\u201315 hours/week across team", "Category": "OOB (Document)", "Stack": "SharePoint Premium / AI Builder", "Rationale": "Leverages pre-built document intelligence models to extract structured metadata from contracts without custom LLM orchestration."}], "Cluster B: R&D / RDEC Claims": [{"Function": "Finance", "Process": "RDEC Claims", "Description": "Identify and calculate R&D costs which can be reclaimed via the RDEC grant", "Effort": "3-4 hours per week trying to collect data/ responses from tech teams. This could easily be 1 FTE with the number of projects in ASOS that we are not yet tapping into", "Category": "Agentic AI (Pro)", "Stack": "Agent Foundry (LangGraph, Azure OpenAI, Vector DB)", "Rationale": "Requires complex semantic reasoning, multi-step API retrieval across non-Microsoft systems, and multi-domain orchestration exceeding OOB limits."}, {"Function": "Finance", "Process": "Tax R&D", "Description": "Calculate all costs that asos can claim an R&D grant for - beyond tech too", "Effort": "TBC", "Category": "Agentic AI (Pro)", "Stack": "Agent Foundry (LangGraph, Azure OpenAI, Vector DB)", "Rationale": "Requires complex semantic reasoning, multi-step API retrieval across non-Microsoft systems, and multi-domain orchestration exceeding OOB limits."}], "Cluster C: Cash & Treasury": [{"Function": "Finance", "Process": "Daily cash summary report", "Description": "Download sanitised transaction data from Coupa (our TMS). Then copy this data into the Daily Treasury Summary file. Sense check, write commentary a...", "Effort": "2.5 hours per week for 1 person", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "CIT Analysis Forecast vs Actuals", "Description": "Cash feeds are pulled from PBI reports and then excel calculates CIT based on acquirer settlement terms. Manually then checked against the daily ca...", "Effort": "TBC", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "FX hedging portfolio and monthly top-ups", "Description": "Spreadsheet-based, incorporating data from Coupa and FP&A forecasts to calculate layered trades to meet policy.", "Effort": "2 hours per month", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "FOB Reporting", "Description": "CSVs are requested from major freight forwarders every month, which include all details of shipped goods over many months, this list is injested in...", "Effort": "2 hours for 1 person", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "Revenue to Cash Reconciliation", "Description": "A reconciliation between the revenue GL and the cash bank payments", "Effort": "Not currently feasible with any consistent accuracy", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "Bank Payments D365 Entering", "Description": "Exporting data from Coupa, coding, the uploading in D365 every Monday", "Effort": "5 hours per week for 1 person", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "Cash Actualisation", "Description": "Download cash actuals from dynamics and map it through the week it relates to and then actualise weeks", "Effort": "Bi Weekly - 10 Hours across Commercial Finance", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}], "Cluster D: VAT Workflow": [{"Function": "Finance", "Process": "VAT Cash Forecasting", "Description": "Calculate forecasted VAT payments based on historic trends to aid cashflow forecasting.", "Effort": "TBC - FP&A currently struggle to accurately forecast VAT due to the data that is given by Tax, a lot of time is spent on their end chasing and trying to pin down what figures are correct", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "VAT Balance Sheet Attestation", "Description": "Verification that the balances on the balance sheet are accurate and complete.", "Effort": "3+ hours, sometimes takes 2 to 3 peoples time.", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "Compliance tracker", "Description": "A tool that tracks all upcoming compliance (returns etc), sends prompts to collate data, tracks status and hand-offs through to payment. Also with ...", "Effort": "Unsure - but more mitigating the risk that anything gets missed", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "VAT Reconciliations", "Description": "Reconciling VAT Returns against what is in the Balance Sheet. This is currently done separately by 3 individuals, all in their own way.", "Effort": "3+ hours per week per analysts depending on reconciliation differences.", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}, {"Function": "Finance", "Process": "VAT Returns", "Description": "Monthly/Bi-Monthly/Quarterly preparation of VAT returns for various jurisdictions + reviewing & filing of final returns.", "Effort": "3+ hours per analyst", "Category": "OOB (Automation)", "Stack": "Power Automate / D365 APIs", "Rationale": "Relies on deterministic RPA and API workflows to reconcile data. Does not require generative or autonomous reasoning."}], "Cluster E: Tech Cost Capitalisation": [{"Function": "Finance", "Process": "Capex v Opex determination", "Description": "Manual determination of whether expenditure is capex v opex. This is done by gathering enough information from  relevant stakeholders / contracts e...", "Effort": "Varies each week. Depends on capex activity / projects in pipeline.", "Category": "Agentic AI (Pro)", "Stack": "Agent Foundry (LangGraph, Azure OpenAI, Vector DB)", "Rationale": "Requires complex semantic reasoning, multi-step API retrieval across non-Microsoft systems, and multi-domain orchestration exceeding OOB limits."}, {"Function": "Finance", "Process": "Tech Tagging", "Description": "Process where every journal posted to Tech P&L accounts require manual tagging.\nAt the moment manually import into spreadsheet and use combination ...", "Effort": "8 hours for 1 person.", "Category": "OOB (Hybrid)", "Stack": "Power Automate + AI Builder", "Rationale": "Combines standard document extraction with deterministic workflow routing for timesheets and basic capital commitments."}, {"Function": "Finance", "Process": "Capital Commitments at Interim and Year End\n\n(Similar for Impairment testing)", "Description": "Pull report of all POs and then split out only those that are applicable - Capex, have remaining value on PO, not too old etc\nThen reach out to all...", "Effort": "5 hours total across numerous people", "Category": "OOB (Hybrid)", "Stack": "Power Automate + AI Builder", "Rationale": "Combines standard document extraction with deterministic workflow routing for timesheets and basic capital commitments."}, {"Function": "Finance", "Process": "Capex Missing Timesheets", "Description": "Manual calculation of missing timesheets prepared. Pulls data from system and allocates based on best estimate what Tech time might be capitalisable.", "Effort": "2 - 3  hours for 1 person", "Category": "OOB (Hybrid)", "Stack": "Power Automate + AI Builder", "Rationale": "Combines standard document extraction with deterministic workflow routing for timesheets and basic capital commitments."}, {"Function": "Finance", "Process": "TimeSheets", "Description": "caucalte hours spent on different projects", "Effort": "TBC", "Category": "OOB (Hybrid)", "Stack": "Power Automate + AI Builder", "Rationale": "Combines standard document extraction with deterministic workflow routing for timesheets and basic capital commitments."}], "Cluster F: Review & Commentary": [{"Function": "Finance", "Process": "Financial statements reviewer", "Description": "Performs a first-line review of any new draft versions of a set of financial statements (Group or statutory), specifically checking for internal co...", "Effort": "During reporting periods, manual review of financial statements is an ongoing task for Group team, and we co-ordinate FA reviewers once a week, requiring 3-4 hours per reviewer per task.", "Category": "OOB (Assistant)", "Stack": "Copilot for Microsoft 365", "Rationale": "Human-in-the-loop review leveraging standard Copilot for document comparison and variance summarization."}, {"Function": "Finance", "Process": "Analytical Review for PWC at HY and FY", "Description": "Builds detailed commentary as to why applicable BS & P&L line items have moved by either a certain \u00a3 amount or %.", "Effort": "Numerous", "Category": "Agentic AI (Pro)", "Stack": "Agent Foundry (LangGraph, Azure OpenAI, Vector DB)", "Rationale": "Requires complex semantic reasoning, multi-step API retrieval across non-Microsoft systems, and multi-domain orchestration exceeding OOB limits."}], "Cluster G: Inbox & Query Triage": [{"Function": "Finance", "Process": "Supplier Queries Automation", "Description": "Using a centralised mailbox, directing all supplier and stakeholder queries to be dealt with by AI. Currently across a team of 14 AP assistant they...", "Effort": "296 hours per week for 8 people", "Category": "OOB (Conversational)", "Stack": "Copilot Studio + SharePoint", "Rationale": "Fully resolvable using Copilot Studio grounded on internal knowledge bases (RAG) for autonomous FAQ and ticket routing."}, {"Function": "Procurement", "Process": "Proc Ops Inbox Queries", "Description": "Manual process responding to queries from the business that come into the Proc Ops inbox", "Effort": "1-2 hours", "Category": "OOB (Conversational)", "Stack": "Copilot Studio + SharePoint", "Rationale": "Fully resolvable using Copilot Studio grounded on internal knowledge bases (RAG) for autonomous FAQ and ticket routing."}, {"Function": "Procurement", "Process": "Enabling Self-serve / Guided Buying", "Description": "This enables stakeholders to be clearly guided through the different steps of the Procurement including who to engage and when, guardrails, risks, ...", "Effort": "Unknown", "Category": "OOB (Conversational)", "Stack": "Copilot Studio + SharePoint", "Rationale": "Fully resolvable using Copilot Studio grounded on internal knowledge bases (RAG) for autonomous FAQ and ticket routing."}], "Cluster H: Commercial Insights": [{"Function": "Finance", "Process": "AB Testing Dashboard", "Description": "Collate data from ADE, Adobe and Optimizely to review KPIs across all A/B testing activity.", "Effort": "TBC", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}, {"Function": "Finance", "Process": "Supplier Goodwill Management", "Description": "There is relatively little management of this in terms of visibility of repeat offenders in the supply base, and how it nets off against the AP lines.", "Effort": "Ad Hoc - But 1 Person 2 hours per request", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}, {"Function": "Finance", "Process": "Opex Insights", "Description": "There are limited insights on Opex spend - and a lot of it is individual driven rather than looking at collective cost management all together", "Effort": "N/A Doesn't exist", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}, {"Function": "Finance", "Process": "Travel Insights", "Description": "There are limited insights on Travel spend - and a lot of it is individual driven rather than looking at collective cost management all together", "Effort": "N/A Doesn't exist", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}, {"Function": "Finance", "Process": "General Business Insight", "Description": "How to make the process of generating insights faster", "Effort": "N/A Doesn't exist", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}, {"Function": "Finance", "Process": "Cost Price Increase anomalies", "Description": "Doesn't exist", "Effort": "1 hour a week / 1 person", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}, {"Function": "Finance", "Process": "Supplier Performance Review", "Description": "Doesn't exist - or ad hoc and very manual", "Effort": "TBC", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}], "Cluster I: Buyer Intake Roll-ups": [{"Function": "Finance", "Process": "Objectives Roll", "Description": "Collation of multiple teams intake values and margin outlook expectations", "Effort": "Bi Monthly -  1 Person, 10 Hours", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}, {"Function": "Finance", "Process": "Supplier Roll", "Description": "Collation of multiple teams intake values and margin outlook expectations", "Effort": "Bi Monthly -  1 Person, 10 Hours", "Category": "OOB (Analytics)", "Stack": "Power BI Copilot / Fabric", "Rationale": "Anomaly detection and insight generation are native capabilities within Power BI when underlying data is modeled correctly."}], "Frontier / D365 Native": [{"Function": "Finance", "Process": "PRGX Duplicate Payment Review", "Description": "We outsource a company to do a duplicate payment review from our financial data in D365, and they charge up to 14% commission on each duplicate pay...", "Effort": "TBC", "Category": "Platform Native", "Stack": "Dynamics 365 Frontier", "Rationale": "Identified within the Dynamics 365 Frontier roadmap. Custom build would result in duplication and technical debt."}, {"Function": "Finance", "Process": "RTS Data", "Description": "Currently, RTS provisioning is very manual, and requires  making broad assumptions to arrive at a figure close to what we need", "Effort": "2 hours for 1 person", "Category": "Platform Native", "Stack": "Dynamics 365 Frontier", "Rationale": "Identified within the Dynamics 365 Frontier roadmap. Custom build would result in duplication and technical debt."}, {"Function": "Finance", "Process": "Inventory data", "Description": "Currently we have no way of accurately assessing the quality of the stock transactional data, this is due to missing transactions and significant d...", "Effort": "Not currently feasible", "Category": "Platform Native", "Stack": "Dynamics 365 Frontier", "Rationale": "Identified within the Dynamics 365 Frontier roadmap. Custom build would result in duplication and technical debt."}, {"Function": "Procurement", "Process": "Audit Recovery", "Description": "The process to recover costs for duplicate invoice payments.\n\nListed under Procurement as this is involves third party spend data, however understa...", "Effort": "Unknown", "Category": "Platform Native", "Stack": "Dynamics 365 Frontier", "Rationale": "Identified within the Dynamics 365 Frontier roadmap. Custom build would result in duplication and technical debt."}], "Agentic AI (Pro-Code)": [{"Function": "Finance", "Process": "US Import Compliance", "Description": "Ensuring that all goods imported into the US are declared, valued, classified, documented, and monitored correctly in line with CBP regulations, wi...", "Effort": "TBC - Customs team to provide more detail", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Tendering & supplier selection", "Description": "The process to run a RFx event to assess the market for prospective suppliers who offer the required goods/services. Involves multiple stakeholder ...", "Effort": "Difficult to quantify as the time taken to run an RFx event from start to finish depends on a number of factors, including the type of goods/services being purchased, internal timelines, costs, the risks involved, the number of departments/stakeholders it spans.", "Category": "Agentic AI (Pro)", "Stack": "Agent Foundry (LangGraph, Azure OpenAI, Vector DB)", "Rationale": "Requires complex semantic reasoning, multi-step API retrieval across non-Microsoft systems, and multi-domain orchestration exceeding OOB limits."}, {"Function": "Procurement", "Process": "Third Party Risk Management (TRPM)", "Description": "This process covers the review of financial and ESG risks (including sustainability, PEPs, sanctions & adverse media) of suppliers as part of the s...", "Effort": "Unknown", "Category": "Agentic AI (Pro)", "Stack": "Agent Foundry (LangGraph, Azure OpenAI, Vector DB)", "Rationale": "Requires complex semantic reasoning, multi-step API retrieval across non-Microsoft systems, and multi-domain orchestration exceeding OOB limits."}, {"Function": "Internal Audit & Risk", "Process": "Controls testing / data analysis", "Description": "Obtaining populations of financial and non-financial data, selecting a sample of items on a risk basis and then confirming the appropriate operatio...", "Effort": "TBC", "Category": "Agentic AI (Pro)", "Stack": "Agent Foundry (LangGraph, Azure OpenAI, Vector DB)", "Rationale": "Requires complex semantic reasoning, multi-step API retrieval across non-Microsoft systems, and multi-domain orchestration exceeding OOB limits."}], "Unmapped Initiatives": [{"Function": "Finance", "Process": "B2B2C Calculation Model", "Description": "The B2B2C calculation model determines how revenue and costs should be attributed between the UK and US entities by applying consistent allocation ...", "Effort": "TBC - New Process", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Budget Tracking & Dynamics Reconciliations", "Description": "Collates financial budgets for Tax in a financial year and tracks against payments made in dynamics to track spending against budget.", "Effort": "2 hours per week total, across numerous users, so very small effort - quite ad-hoc but always a lot of attention towards year end as budgets are renewed.", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Dynamics Bookings", "Description": "Booking journals into dynamics for various tax postings.", "Effort": "Postings only a few times a month in the Tax team, but imagine other teams do this far more often than we do.", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Tax Provisioning", "Description": "Process of calculating and reporting income tax expense in the financial statements.", "Effort": "Half Year - 1-2 weeks\nYear End - 2-3 weeks\n\nStandalone financials 7 hours x 24 entities", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Balance Sheet Extraction", "Description": "Download of Balance Sheet from Dynamics and testing Opening/Closing Balances against GL Movement.", "Effort": "2 hours per month + additional time for investingting reconciliation differences.", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "FX Rate extraction from PDFs", "Description": "Manually reading through PDFs to extract FX Rates.", "Effort": "2+ hours for 1 analyst depending on volume of invoices.", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Duty Deferment Reconciliations", "Description": "Collating and analysing data to justify delayed payment if import duties and import VAT.", "Effort": "TBC - Customs team to provide more detail", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Updating Trade News/ Standards", "Description": "Identifying when laws/legislation changes in jurisdictions and assessing the impact on ASOS operations/processes.", "Effort": "TBC - Hard to put metrics against this one as we are not really tracking legislation, we are reactive when a change is alerted to us.", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Declartation Report Analysis", "Description": "Reviewing and validating customs declaration data to identify errors, risks, and opportunities.", "Effort": "Ad-Hoc - dependent on audit enquires/ flagged checks", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Monthly Duty Forecasting", "Description": "Calculate forecasted Duty payments based on historic & seasonal trends to aid cashflow forecasting.", "Effort": "TBC - No current process", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "RMS Base Data Updates", "Description": "Ensuring the underlying foundational commercial data is accurate and reliable.", "Effort": "Ad-Hoc - not consistently looked at", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Landed-Cost Estimator from PO Data", "Description": "Forward-looking calculation that uses purchase order data to estimate the total cost of goods once imported, including duty, freight, and other cus...", "Effort": "TBC - Customs team to provide more detail", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "RGR Reconciliations", "Description": "Reconciling broker reports (RGR Logs/Custom Warehouse Reports) against PO data to validate if they were eligible for Goods Relief as declared.", "Effort": "Currently spending 2+ days a week looking at the 2024 audit, same needs to be done for FY25.\n\nMoving forward we want to track this on a monthly basis so the hope is to get it down to an hour or two max per month for purely review time", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Creation of Customs entries from Master Data", "Description": "Generating customs declarations by pulling required data fields directly from internal master datasets (product, supplier, PO, logistics)", "Effort": "TBC - Customs team to provide more detail", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "CDS data compliance review", "Description": "Structured review of customs declaration data (from CDS extracts) to identify errors, inconsistencies, and non-compliance before they become audit ...", "Effort": "TBC - Customs team to provide more detail", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Customs Valuation Checks (e.g. Value per commodity)", "Description": "Set of analytical and reconciliation controls used to verify that declared customs values (e.g. price per unit or per commodity) are accurate, cons...", "Effort": "TBC - Customs team to provide more detail", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Termination Payments Tracker", "Description": "Employee data is manually pulled from workday e.g. DOB, basic pay & inputted into a excel spreadsheet to calculate PILONS, Redundancy, Statutory re...", "Effort": "5-20 hours per month by PX (depending on redundancies etc.)", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Travel Data (FCM/Egencia)", "Description": "Each employee booking e.g. flight, accommodation, train, is shown on separate lines on the report file and trip start/ date ends are manually compa...", "Effort": "Annual process taking around 8 hours", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "P11D Data Review", "Description": "Comparison of benefit provider data, Workday information & payroll deductions to determine P11D reportable value.", "Effort": "Annual process which takes almost a full month to complete end-to-end", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "PR Receipting", "Description": "Automating PR Receipting, this is a major issue for the NS team, when an invoice comes into the business we require a receipt to be in the system t...", "Effort": "TBC", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Supplier Setups", "Description": "To be able to automate Non-Stock (Curtis Fitch)  & Stock setups (Extranet)", "Effort": "8 hours per week", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "AR & AP Debit note upload", "Description": "To be able to use an upload functionality to integrate invoices and debit notes into D365 rather than keying in the information manually, we have v...", "Effort": "TBC", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "AP Reporting", "Description": "Currently we have once dedicated person processing our reporting, some reports have been automated using Power BI", "Effort": "TBC", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "AR Payment Automated Allocation", "Description": "We currently process payments manually, to be able to allocate payments from receiving remittances in the AR mailbox, once payment is received", "Effort": "TBC", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Bi-annual holiday pay calculation.", "Description": "At P6 and P12 holiday pay accrual is manually calculated. Pulls data from various payroll reports (very sensitive information) to determine what th...", "Effort": "1.5 days for 1 person", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Reversing Journals", "Description": "During prep week, some major accrual journal are reversed individually, this is a manual process which relies on information from D365 and multiple...", "Effort": "2 hours for 1 person", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "FX Revaluation on Returned Sales", "Description": "Historically run alongside below returns provision workpaper. Additional calculation on FX on returns realised. Aligning the sold value fx rate to ...", "Effort": "1 hour for one person", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Returns Provision", "Description": "Obtain data on returns from ADE, get input from FP&A, run calculations and produce a provision for returns.", "Effort": "2-3 hours per month for 1 person", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Strategic Initiative Measurement", "Description": "Collate data across all strategic initiatives to track delivery and performance.", "Effort": "TBC", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Month End Outputs", "Description": "Numerous manual reports\nMonthly \n1. Databook - half is in ADE, half reuqires manul inputs\n2. Month End Bridge File - also requires manual inputs fr...", "Effort": "TBC", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Budget", "Description": "Collate data across all strategic initiatives to track delivery and performance.", "Effort": "Multiple stakeholders across FP&A and Commercial, working via Excel.", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Month end Outputs - OE team", "Description": "1. Month end bridge file - can automate a link to nathans power bi (Sherif to do),  Piece that will remain manual is the bridge write up itself. \n2...", "Effort": "2 weeks", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Supplier Charge Backs", "Description": "Very manual process to work out how much to reclaim for Supplier Charge Backs - normally about \u00a315-40K a half, so worth doing", "Effort": "15 Hours once a half", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Finance", "Process": "Chameleon actualisation", "Description": "Whenever FP&A Ask, we have to actualise the Chameleon model - which is really time consuming and painful because of how it is built and related to ...", "Effort": "Half Yearly - 15 Hours across Commercial Finance", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Category Planning", "Description": "Each year the category managers will produce category plans covering each of their areas (e.g. Tech, Marketing) to determine what their key initiat...", "Effort": "Unknown", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Supplier onboarding", "Description": "The process to onboard a new supplier onto our systems. This links closely with TPRM.", "Effort": "Approx 1-2 hours per week of queries received into the Proc Ops mailbox, of which the majority are related to supplier onboarding.", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Clarifying purchasing requirements / supplier briefing document", "Description": "The process of the stakeholder/requestor clarifying exactly what goods and services they wish to purchase, in order to translate this into a suppli...", "Effort": "Unknown", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Supplier Risk Management (SRM)", "Description": "The process of segmenting suppliers into different risk profiles based on a number of factors (including spend profile, business criticality, and t...", "Effort": "Unknown - we do not currently have a formal SRM process/solution", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Supplier Master Data & Segmentation", "Description": "The process to capture and maintain clean and up-to-date supplier data, including the categorisation/segmention.", "Effort": "Unknown", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Payment Terms approval", "Description": "The process to approve non-standard payment terms.", "Effort": "Unknown", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Savings tracking", "Description": "The process to log savings and cost avoidances achieved by negotiation of existing and new contracts.", "Effort": "Unknown", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Spend reporting", "Description": "The monthly process to report on spend (and savings) which is presented at Monthly Opex/Capex committee.", "Effort": "Unknown", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Stakeholder mapping", "Description": "The process to create a Stakeholder Map, which identifies critical business partners which Procurement need to collaborate and engage with, to effe...", "Effort": "Unknown", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}, {"Function": "Procurement", "Process": "Procurement Policy", "Description": "A policy to determine the process, rules and guardrails for procuring third party goods and services at ASOS.", "Effort": "Unknown", "Category": "Standard Automation", "Stack": "Power Platform", "Rationale": "Deterministic workflow candidate suitable for standard low-code automation."}]};
+        function switchMainView(viewId) { document.querySelectorAll('.master-tab').forEach(t => t.classList.remove('active')); document.querySelector(`.master-tab[onclick="switchMainView('${viewId}')"]`).classList.add('active'); document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(viewId).classList.add('active'); }
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(event) { if(event.target.classList.contains('modal-overlay')) { event.target.classList.remove('active'); } }
+        const subNav = document.getElementById('cluster-sub-nav');
+        const contentArea = document.getElementById('cluster-content-area');
+        let first = true;
+        for (const [cluster, processes] of Object.entries(data)) {
+            if (processes.length === 0) continue;
+            const cleanId = `cluster-${cluster.replace(/[^a-zA-Z0-9]/g, '')}`;
+            const shortName = cluster.split(':')[0].trim();
+            const btn = document.createElement('div'); btn.className = `sub-tab ${first ? 'active' : ''}`; btn.textContent = `${shortName} (${processes.length})`; btn.dataset.target = cleanId; btn.onclick = () => showCluster(cleanId); subNav.appendChild(btn);
+            const content = document.createElement('div'); content.className = `cluster-content ${first ? 'active' : ''}`; content.id = cleanId;
+            let tableHTML = `<div class="table-card"><h2>${cluster}</h2><table><thead><tr><th class="col-proc">Process</th><th class="col-desc">Description</th><th class="col-disp">Disposition</th><th class="col-stack">Target Tech Stack</th><th class="col-rationale">Architectural Rationale</th></tr></thead><tbody>`;
+            processes.forEach(p => {
+                const badgeClass = p.Category.includes('Pro') ? 'pro-code' : 'oob';
+                tableHTML += `<tr><td class="col-proc">${p.Process}<span class="function-tag">${p.Function}</span></td><td class="col-desc">${p.Description}</td><td class="col-disp"><span class="badge ${badgeClass}">${p.Category}</span></td><td class="col-stack">${p.Stack}</td><td class="col-rationale">${p.Rationale}</td></tr>`;
+            });
+            tableHTML += `</tbody></table></div>`;
+            content.innerHTML = tableHTML;
+            contentArea.appendChild(content);
+            first = false;
+        }
+        function showCluster(targetId) { document.querySelectorAll('.sub-tab').forEach(btn => { btn.classList.remove('active'); if(btn.dataset.target === targetId) btn.classList.add('active'); }); document.querySelectorAll('.cluster-content').forEach(content => { content.classList.remove('active'); if(content.id === targetId) content.classList.add('active'); }); }
+    </script>
+</body>
+</html>
