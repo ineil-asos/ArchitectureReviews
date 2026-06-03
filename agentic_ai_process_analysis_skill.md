@@ -44,7 +44,7 @@ The structure must strictly follow:
    - **Compliance Guardrails:** Monochromatic table with Red/Amber/Green verdicts. Labels must cross-reference specific Q-IDs and implement an instant, custom JS/CSS tooltip system to show the full question text on hover (bypassing native browser delays).
    - **Mitigation Strategy:** 2-column grid outlining the expert architecture recommendations.
 
-## 4. Design Aesthetics & CSS (McKinsey/PWC Premium Style)
+## 4. Design Aesthetics & CSS (Premium Style - AI & Tech Consulting)
 The CSS must adhere to a premium editorial design system:
 - **Typography:** Google Font `Inter`. Weights restricted to 300 (light), 400 (regular), 600 (semibold). Generous line-height (`1.6` or `1.7`).
 - **Whitespace:** Extremely generous padding (`padding: 56px 64px` for modals).
