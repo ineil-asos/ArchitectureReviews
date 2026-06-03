@@ -44,7 +44,7 @@ The structure must strictly follow:
    - **Compliance Guardrails:** Monochromatic table with Red/Amber/Green verdicts. Labels must cross-reference specific Q-IDs and implement an instant, custom JS/CSS tooltip system to show the full question text on hover (bypassing native browser delays).
    - **Mitigation Strategy:** 2-column grid outlining the expert architecture recommendations.
 
-## 4. Design Aesthetics & CSS (Premium Style - AI & Tech Consulting)
+## 4. Design Aesthetics & CSS (McKinsey/PWC Premium Style)
 The CSS must adhere to a premium editorial design system:
 - **Typography:** Google Font `Inter`. Weights restricted to 300 (light), 400 (regular), 600 (semibold). Generous line-height (`1.6` or `1.7`).
 - **Whitespace:** Extremely generous padding (`padding: 56px 64px` for modals).
@@ -67,3 +67,40 @@ The CSS must adhere to a premium editorial design system:
 2. Run the Governance & Business Value analysis in memory.
 3. Output the fully formed HTML structure containing the generated analysis injected directly into the premium CSS template.
 4. Provide the user with a local server command (`python3 -m http.server 8000`) to view the file without `file://` CORS issues.
+
+## 6. Corporate AI Risk Questionnaire Baseline
+Use the following 22-question framework to assess risk and generate the Q-ID tooltips:
+
+**1. Prohibited & High-Risk Applications**
+- **Q1:** Does the project involve the AI system to be used for access to, evaluating eligibility and/or enjoyment of essential private / public services and benefits?
+- **Q2:** Does the project involve the AI system to be used as a safety component of a product or the AI system is itself a product regulated by safety regulations?
+- **Q3:** Does the project involve the AI system to be used for critical infrastructure?
+- **Q4:** Does the project involve the AI system to be used for employment, workers' management or access to self-employment?
+- **Q5:** Does the project involve the AI system to be used for migration, asylum and border control management, administration of justice, democratic processes or law enforcement?
+- **Q8:** Is there a risk of the project involving AI practices that have been categorized as "prohibited"?
+- **Q9:** Is the proposed AI solution used in a system where human health and safety is paramount?
+
+**2. Data Privacy & Sensitivity**
+- **Q6:** Does the project involve the use of sensitive personal information (eg biometric data, health data, financial data)?
+- **Q7:** Does the project involve the AI system using emotion recognition with the purpose to identify or infer emotions or intentions of natural persons?
+
+**3. Ethics, Rights & Societal Impact**
+- **Q10:** Does the proposed AI solution relate to, or could it impact environmental matters beyond the incidental impacts of operating the model itself?
+- **Q11:** Could the proposed AI solution be used to create and spread information which may have a material impact on democracy?
+- **Q12:** Could the proposed AI solution impact the fundamental rights of individuals?
+
+**4. Operational Autonomy & Accountability**
+- **Q13:** Does the proposed AI solution operate as part of the core systems of any business?
+- **Q14:** Does the proposed AI solution fulfil any regulated duty?
+- **Q15:** During deployment would the proposed AI solution make and/or implement decisions autonomously?
+
+**5. Ecosystem & Third-Party Exposure**
+- **Q16:** Is Cognizant itself providing data for use in or with the AI?
+- **Q17:** Will the proposed AI solution be used by third party members of the public?
+- **Q18:** Will the solution's functionality or output(s) be relied on by anyone other than the client and its group affiliates?
+- **Q22:** Does the solution extract or use third party content without prior license, including data scraping from online sources?
+
+**6. Financial & Process Risk**
+- **Q19:** Does the solution determine values or prices for assets or services?
+- **Q20:** Does the solution perform a high volume of tasks or transactions where an error could cause significant losses or tasks to put right?
+- **Q21:** Does the solution perform a role or function that the client has identified as high sensitivity or risk?
