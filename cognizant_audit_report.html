@@ -132,6 +132,19 @@
         .badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:3px;font-size:10px;font-weight:600;background:#F1F5F9;border:1px solid #E2E8F0;color:#475569;letter-spacing:.02em}
         .badge.pro-code{background:var(--cognizant-blue);color:white;border-color:var(--cognizant-blue)}
         .cluster-content{display:none}.cluster-content.active{display:block}
+        .print-btn{position:absolute;top:30px;right:80px;cursor:pointer;font-size:11px;font-weight:600;color:var(--cognizant-blue);border:1px solid var(--cognizant-blue);background:#FFF;padding:6px 12px;border-radius:4px;transition:all .15s;text-transform:uppercase;letter-spacing:.05em}
+        .print-btn:hover{background:var(--cognizant-blue);color:#FFF}
+        @media print{
+            @page { margin: 1cm; }
+            body { background: #FFF; }
+            header, .master-nav, .wrapper { display: none !important; }
+            .modal-overlay { position: static !important; background: none !important; backdrop-filter: none !important; display: none !important; }
+            .modal-overlay.active { display: block !important; opacity: 1 !important; }
+            .modal-content { transform: none !important; padding: 0 !important; box-shadow: none !important; max-width: 100% !important; max-height: none !important; overflow: visible !important; margin: 0 auto !important; }
+            .close-btn, .print-btn { display: none !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .arch-infographic, .bv-grid, .mitigation-grid, .guardrails-container { page-break-inside: avoid; }
+        }
     </style>
 </head>
 <body>
@@ -142,6 +155,7 @@
     <div class="master-nav">
         <div class="master-tab active" onclick="switchMainView('exec-summary')">Executive Summary</div>
         <div class="master-tab" onclick="switchMainView('detailed-analysis')">Detailed Analysis</div>
+        <div class="master-tab" onclick="switchMainView('ai-questionnaire')">AI Risk Questionnaire</div>
     </div>
     <div class="wrapper"><div class="content-container">
         <div id="exec-summary" class="view-section active">
@@ -177,10 +191,59 @@
             <div class="sub-nav" id="cluster-sub-nav"></div>
             <div id="cluster-content-area"></div>
         </div>
+        
+        <div id="ai-questionnaire" class="view-section">
+            <h1>AI Risk & Compliance Questionnaire</h1>
+            <p class="intro-text">Standard corporate compliance evaluation criteria used to baseline proposed Agentic AI solutions.</p>
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 100%;">Question</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="1" style="font-weight:700; background:#F8FAFC; color:var(--cognizant-blue); padding:12px 16px; border-bottom:1px solid #E2E8F0;">1. PROHIBITED & HIGH-RISK APPLICATIONS</td></tr>
+                        <tr><td class="col-desc"><strong>Q1:</strong> Does the project involve the AI system to be used for access to, evaluating eligibility and/or enjoyment of essential private / public services and benefits?</td></tr>
+                        <tr><td class="col-desc"><strong>Q2:</strong> Does the project involve the AI system to be used as a safety component of a product or the AI system is itself a product regulated by safety regulations?</td></tr>
+                        <tr><td class="col-desc"><strong>Q3:</strong> Does the project involve the AI system to be used for critical infrastructure?</td></tr>
+                        <tr><td class="col-desc"><strong>Q4:</strong> Does the project involve the AI system to be used for employment, workers' management or access to self-employment?</td></tr>
+                        <tr><td class="col-desc"><strong>Q5:</strong> Does the project involve the AI system to be used for migration, asylum and border control management, administration of justice, democratic processes or law enforcement?</td></tr>
+                        <tr><td class="col-desc"><strong>Q8:</strong> Is there a risk of the project involving AI practices that have been categorized as "prohibited"?</td></tr>
+                        <tr><td class="col-desc"><strong>Q9:</strong> Is the proposed AI solution used in a system where human health and safety is paramount?</td></tr>
+
+                        <tr><td colspan="1" style="font-weight:700; background:#F8FAFC; color:var(--cognizant-blue); padding:12px 16px; border-bottom:1px solid #E2E8F0; border-top:1px solid #E2E8F0;">2. DATA PRIVACY & SENSITIVITY</td></tr>
+                        <tr><td class="col-desc"><strong>Q6:</strong> Does the project involve the use of sensitive personal information (eg biometric data, health data, financial data)?</td></tr>
+                        <tr><td class="col-desc"><strong>Q7:</strong> Does the project involve the AI system using emotion recognition with the purpose to identify or infer emotions or intentions of natural persons?</td></tr>
+
+                        <tr><td colspan="1" style="font-weight:700; background:#F8FAFC; color:var(--cognizant-blue); padding:12px 16px; border-bottom:1px solid #E2E8F0; border-top:1px solid #E2E8F0;">3. ETHICS, RIGHTS & SOCIETAL IMPACT</td></tr>
+                        <tr><td class="col-desc"><strong>Q10:</strong> Does the proposed AI solution relate to, or could it impact environmental matters beyond the incidental impacts of operating the model itself?</td></tr>
+                        <tr><td class="col-desc"><strong>Q11:</strong> Could the proposed AI solution be used to create and spread information which may have a material impact on democracy?</td></tr>
+                        <tr><td class="col-desc"><strong>Q12:</strong> Could the proposed AI solution impact the fundamental rights of individuals?</td></tr>
+
+                        <tr><td colspan="1" style="font-weight:700; background:#F8FAFC; color:var(--cognizant-blue); padding:12px 16px; border-bottom:1px solid #E2E8F0; border-top:1px solid #E2E8F0;">4. OPERATIONAL AUTONOMY & ACCOUNTABILITY</td></tr>
+                        <tr><td class="col-desc"><strong>Q13:</strong> Does the proposed AI solution operate as part of the core systems of any business?</td></tr>
+                        <tr><td class="col-desc"><strong>Q14:</strong> Does the proposed AI solution fulfil any regulated duty?</td></tr>
+                        <tr><td class="col-desc"><strong>Q15:</strong> During deployment would the proposed AI solution make and/or implement decisions autonomously?</td></tr>
+
+                        <tr><td colspan="1" style="font-weight:700; background:#F8FAFC; color:var(--cognizant-blue); padding:12px 16px; border-bottom:1px solid #E2E8F0; border-top:1px solid #E2E8F0;">5. ECOSYSTEM & THIRD-PARTY EXPOSURE</td></tr>
+                        <tr><td class="col-desc"><strong>Q16:</strong> Is Cognizant itself providing data for use in or with the AI?</td></tr>
+                        <tr><td class="col-desc"><strong>Q17:</strong> Will the proposed AI solution be used by third party members of the public?</td></tr>
+                        <tr><td class="col-desc"><strong>Q18:</strong> Will the solution's functionality or output(s) be relied on by anyone other than the client and its group affiliates?</td></tr>
+                        <tr><td class="col-desc"><strong>Q22:</strong> Does the solution extract or use third party content without prior license, including data scraping from online sources?</td></tr>
+
+                        <tr><td colspan="1" style="font-weight:700; background:#F8FAFC; color:var(--cognizant-blue); padding:12px 16px; border-bottom:1px solid #E2E8F0; border-top:1px solid #E2E8F0;">6. FINANCIAL & PROCESS RISK</td></tr>
+                        <tr><td class="col-desc"><strong>Q19:</strong> Does the solution determine values or prices for assets or services?</td></tr>
+                        <tr><td class="col-desc"><strong>Q20:</strong> Does the solution perform a high volume of tasks or transactions where an error could cause significant losses or tasks to put right?</td></tr>
+                        <tr><td class="col-desc"><strong>Q21:</strong> Does the solution perform a role or function that the client has identified as high sensitivity or risk?</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div></div>
 
     <!-- ===== MODAL 1: RDEC ===== -->
-    <div class="modal-overlay" id="modal-rdec" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="close-btn" onclick="document.getElementById('modal-rdec').classList.remove('active')">✕</button>
+    <div class="modal-overlay" id="modal-rdec" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="print-btn" onclick="window.print()">Print to PDF</button><button class="close-btn" onclick="document.getElementById('modal-rdec').classList.remove('active')">✕</button>
         <h1>R&D Tax Claims Pipeline</h1><h3>Future State Agentic Experience</h3>
         <p>Currently, compiling R&D tax claims requires manual parsing of disparate developer repositories, leading to a high risk of under-claiming due to missed technical subtleties. The proposed future state utilizes a Multi-Agent architecture to autonomously traverse repositories, retrieve code specifications, and map them against complex HMRC guidelines.</p>
         <div class="arch-infographic">
@@ -204,11 +267,11 @@
         </div>
         <div class="analysis-section"><div class="analysis-section-title">AI Governance & Compliance Guardrails</div>
             <div class="guardrails-container">
-                <div class="guardrail-row"><div class="guardrail-label">Regulated Duty</div><div class="guardrail-answer">Yes. Outputs directly inform HMRC tax submissions. Incorrect claims expose the business to penalties and reputational damage. Full provenance tracking from AI output → source Jira ticket is mandatory.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision</div><div class="guardrail-answer">The agent must operate in "Draft-and-Review" mode only. Tax professionals must retain final sign-off authority on every claim line item before submission to HMRC.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Core Business System</div><div class="guardrail-answer">No. Analytical overlay on DevOps/Jira data. Failure reverts to the current manual process without operational disruption.</div><div class="guardrail-verdict verdict-low">Low</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Third-Party Data / IPR</div><div class="guardrail-answer">Ingests internal DevOps and Jira data only. No third-party content scraping. Standard DPA coverage applies.</div><div class="guardrail-verdict verdict-low">Low</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">EU AI Act</div><div class="guardrail-answer">Not classified as High-Risk under Annex III. Standard transparency obligations apply under Article 52.</div><div class="guardrail-verdict verdict-low">Low</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Regulated Duty (Q14)</div><div class="guardrail-answer">Yes. Outputs directly inform HMRC tax submissions. Incorrect claims expose the business to penalties and reputational damage. Full provenance tracking from AI output → source Jira ticket is mandatory.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision (Q15)</div><div class="guardrail-answer">The agent must operate in "Draft-and-Review" mode only. Tax professionals must retain final sign-off authority on every claim line item before submission to HMRC.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Core Business System (Q13)</div><div class="guardrail-answer">No. Analytical overlay on DevOps/Jira data. Failure reverts to the current manual process without operational disruption.</div><div class="guardrail-verdict verdict-low">Low</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Third-Party Data / IPR (Q22)</div><div class="guardrail-answer">Ingests internal DevOps and Jira data only. No third-party content scraping. Standard DPA coverage applies.</div><div class="guardrail-verdict verdict-low">Low</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">EU AI Act (Q8)</div><div class="guardrail-answer">Not classified as High-Risk under Annex III. Standard transparency obligations apply under Article 52.</div><div class="guardrail-verdict verdict-low">Low</div></div>
             </div>
         </div>
         <div class="mitigation-section"><div class="mitigation-title">Mitigation Strategy (Joint AI Security & Architecture Recommendation)</div>
@@ -222,7 +285,7 @@
     </div></div>
 
     <!-- ===== MODAL 2: CONTROLS ===== -->
-    <div class="modal-overlay" id="modal-audit" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="close-btn" onclick="document.getElementById('modal-audit').classList.remove('active')">✕</button>
+    <div class="modal-overlay" id="modal-audit" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="print-btn" onclick="window.print()">Print to PDF</button><button class="close-btn" onclick="document.getElementById('modal-audit').classList.remove('active')">✕</button>
         <h1>Autonomous Controls Testing</h1><h3>Future State Agentic Experience</h3>
         <p>Internal Audits are currently restricted by sample-based, manual post-mortems. By deploying an autonomous Agentic workforce capable of collecting evidence via email and visually interpreting screenshots, the business transitions to a continuous monitoring paradigm.</p>
         <div class="arch-infographic">
@@ -246,10 +309,10 @@
         </div>
         <div class="analysis-section"><div class="analysis-section-title">AI Governance & Compliance Guardrails</div>
             <div class="guardrails-container">
-                <div class="guardrail-row"><div class="guardrail-label">Regulated Duty</div><div class="guardrail-answer">Yes. Internal audit findings relied upon by external auditors (PWC). AI findings must maintain deterministic, auditable evidence chains.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision</div><div class="guardrail-answer">Agents may collect and classify evidence, but must not autonomously close or remediate findings. Human auditor validation required.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Sensitive Data</div><div class="guardrail-answer">Accesses financial transaction data, approval workflows, and potentially PII. Data minimisation (UK GDPR Art. 5(1)(c)) must be enforced.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Third-Party Reliance</div><div class="guardrail-answer">Outputs may be referenced by PWC. Cognizant must contractually disclaim that outputs are "AI-assisted drafts subject to client validation."</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Regulated Duty (Q14)</div><div class="guardrail-answer">Yes. Internal audit findings relied upon by external auditors (PWC). AI findings must maintain deterministic, auditable evidence chains.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision (Q15)</div><div class="guardrail-answer">Agents may collect and classify evidence, but must not autonomously close or remediate findings. Human auditor validation required.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Sensitive Data (Q6)</div><div class="guardrail-answer">Accesses financial transaction data, approval workflows, and potentially PII. Data minimisation (UK GDPR Art. 5(1)(c)) must be enforced.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Third-Party Reliance (Q18)</div><div class="guardrail-answer">Outputs may be referenced by PWC. Cognizant must contractually disclaim that outputs are "AI-assisted drafts subject to client validation."</div><div class="guardrail-verdict verdict-high">High</div></div>
             </div>
         </div>
         <div class="mitigation-section"><div class="mitigation-title">Mitigation Strategy (Joint AI Security & Architecture Recommendation)</div>
@@ -263,7 +326,7 @@
     </div></div>
 
     <!-- ===== MODAL 3: CAPEX ===== -->
-    <div class="modal-overlay" id="modal-capex" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="close-btn" onclick="document.getElementById('modal-capex').classList.remove('active')">✕</button>
+    <div class="modal-overlay" id="modal-capex" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="print-btn" onclick="window.print()">Print to PDF</button><button class="close-btn" onclick="document.getElementById('modal-capex').classList.remove('active')">✕</button>
         <h1>Capex vs. Opex Determination</h1><h3>Future State Agentic Experience</h3>
         <p>Determining capitalization treatment involves nuanced IFRS rules and reliance on historical precedent. A semantic reasoning engine powered by a custom vector database ensures instant, consistent financial structuring without draining FP&A resources.</p>
         <div class="arch-infographic">
@@ -287,9 +350,9 @@
         </div>
         <div class="analysis-section"><div class="analysis-section-title">AI Governance & Compliance Guardrails</div>
             <div class="guardrails-container">
-                <div class="guardrail-row"><div class="guardrail-label">Asset Valuation</div><div class="guardrail-answer">Directly impacts financial valuation and depreciation of corporate assets on the balance sheet. Incorrect classification is a material misstatement risk.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision</div><div class="guardrail-answer">The agent recommends a classification but the FP&A Controller must retain mandatory sign-off. No autonomous journal posting permitted.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Third-Party Reliance</div><div class="guardrail-answer">Classifications are audited by PWC. Recommendations must carry transparent reasoning chains that external auditors can verify.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Asset Valuation (Q19)</div><div class="guardrail-answer">Directly impacts financial valuation and depreciation of corporate assets on the balance sheet. Incorrect classification is a material misstatement risk.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision (Q15)</div><div class="guardrail-answer">The agent recommends a classification but the FP&A Controller must retain mandatory sign-off. No autonomous journal posting permitted.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Third-Party Reliance (Q18)</div><div class="guardrail-answer">Classifications are audited by PWC. Recommendations must carry transparent reasoning chains that external auditors can verify.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
             </div>
         </div>
         <div class="mitigation-section"><div class="mitigation-title">Mitigation Strategy (Joint AI Security & Architecture Recommendation)</div>
@@ -303,7 +366,7 @@
     </div></div>
 
     <!-- ===== MODAL 4: CONTRACT ===== -->
-    <div class="modal-overlay" id="modal-legal" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="close-btn" onclick="document.getElementById('modal-legal').classList.remove('active')">✕</button>
+    <div class="modal-overlay" id="modal-legal" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="print-btn" onclick="window.print()">Print to PDF</button><button class="close-btn" onclick="document.getElementById('modal-legal').classList.remove('active')">✕</button>
         <h1>Active Contract Negotiation</h1><h3>Future State Agentic Experience</h3>
         <p>Legal, Finance, and Procurement currently review contracts in silos. An Agentic orchestration allows multiple domain-specific agents to collaboratively review a single document, synthesizing a mathematically optimized redline that balances risk and speed.</p>
         <div class="arch-infographic">
@@ -327,9 +390,9 @@
         </div>
         <div class="analysis-section"><div class="analysis-section-title">AI Governance & Compliance Guardrails</div>
             <div class="guardrails-container">
-                <div class="guardrail-row"><div class="guardrail-label">Core Business Risk</div><div class="guardrail-answer">High. Improperly negotiated liability caps expose the business to severe financial risk. All redlines must be treated as draft suggestions.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Third-Party Data / IPR</div><div class="guardrail-answer">Ingests counterparty confidential documents. Strict data isolation and access controls required. No cross-client data leakage.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Pricing / Valuation</div><div class="guardrail-answer">May influence commercial terms. Must be validated against pre-approved delegation of authority matrices.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Core Business Risk (Q13)</div><div class="guardrail-answer">High. Improperly negotiated liability caps expose the business to severe financial risk. All redlines must be treated as draft suggestions.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Third-Party Data / IPR (Q22)</div><div class="guardrail-answer">Ingests counterparty confidential documents. Strict data isolation and access controls required. No cross-client data leakage.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Pricing / Valuation (Q19)</div><div class="guardrail-answer">May influence commercial terms. Must be validated against pre-approved delegation of authority matrices.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
             </div>
         </div>
         <div class="mitigation-section"><div class="mitigation-title">Mitigation Strategy (Joint AI Security & Architecture Recommendation)</div>
@@ -343,7 +406,7 @@
     </div></div>
 
     <!-- ===== MODAL 5: HORIZON ===== -->
-    <div class="modal-overlay" id="modal-horizon" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="close-btn" onclick="document.getElementById('modal-horizon').classList.remove('active')">✕</button>
+    <div class="modal-overlay" id="modal-horizon" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="print-btn" onclick="window.print()">Print to PDF</button><button class="close-btn" onclick="document.getElementById('modal-horizon').classList.remove('active')">✕</button>
         <h1>Regulatory Horizon Scanning</h1><h3>Future State Agentic Experience</h3>
         <p>Monitoring global regulations and mapping them to internal corporate structures requires massive manual effort. A continuous background execution system filters external internet noise and cross-references it against internal corporate knowledge graphs to issue proactive alerts.</p>
         <div class="arch-infographic">
@@ -367,9 +430,9 @@
         </div>
         <div class="analysis-section"><div class="analysis-section-title">AI Governance & Compliance Guardrails</div>
             <div class="guardrails-container">
-                <div class="guardrail-row"><div class="guardrail-label">Data Scraping / IPR</div><div class="guardrail-answer">High risk. Must exclusively use licensed regulatory databases. Unlicensed web-scraping of legal publishers would violate IPR and client AI risk policy (Q22).</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Regulated Duty</div><div class="guardrail-answer">Missed regulations carry heavy penalties. AI is a supplementary monitoring layer, not a replacement for qualified legal review.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision</div><div class="guardrail-answer">System alerts and summarises; it does not make compliance decisions. Legal counsel retains full authority.</div><div class="guardrail-verdict verdict-low">Low</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Data Scraping / IPR (Q22)</div><div class="guardrail-answer">High risk. Must exclusively use licensed regulatory databases. Unlicensed web-scraping of legal publishers would violate IPR and client AI risk policy (Q22).</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Regulated Duty (Q14)</div><div class="guardrail-answer">Missed regulations carry heavy penalties. AI is a supplementary monitoring layer, not a replacement for qualified legal review.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision (Q15)</div><div class="guardrail-answer">System alerts and summarises; it does not make compliance decisions. Legal counsel retains full authority.</div><div class="guardrail-verdict verdict-low">Low</div></div>
             </div>
         </div>
         <div class="mitigation-section"><div class="mitigation-title">Mitigation Strategy (Joint AI Security & Architecture Recommendation)</div>
@@ -383,7 +446,7 @@
     </div></div>
 
     <!-- ===== MODAL 6: TPRM ===== -->
-    <div class="modal-overlay" id="modal-tprm" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="close-btn" onclick="document.getElementById('modal-tprm').classList.remove('active')">✕</button>
+    <div class="modal-overlay" id="modal-tprm" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="print-btn" onclick="window.print()">Print to PDF</button><button class="close-btn" onclick="document.getElementById('modal-tprm').classList.remove('active')">✕</button>
         <h1>Third Party Risk Management</h1><h3>Future State Agentic Experience</h3>
         <p>TPRM relies on disjointed external APIs (e.g., D&B, Ecovadis) and static spreadsheets. A multi-agent framework continuously pulls external risk data, evaluates it against internal vendor tiering, and autonomously drafts risk mitigation plans for procurement.</p>
         <div class="arch-infographic">
@@ -407,9 +470,9 @@
         </div>
         <div class="analysis-section"><div class="analysis-section-title">AI Governance & Compliance Guardrails</div>
             <div class="guardrails-container">
-                <div class="guardrail-row"><div class="guardrail-label">Data Scraping / IPR</div><div class="guardrail-answer">Must use licensed API feeds. All data broker contracts must explicitly permit AI-driven consumption.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Sanctions / PEP Data</div><div class="guardrail-answer">Processes sanctions lists and PEP data. Misclassification carries regulatory penalties. Auditable decision logs mandatory.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision</div><div class="guardrail-answer">Agents may draft mitigation plans but must not autonomously blacklist or suspend vendors. Human procurement authority required.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Data Scraping / IPR (Q22)</div><div class="guardrail-answer">Must use licensed API feeds. All data broker contracts must explicitly permit AI-driven consumption.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Sanctions / PEP Data (Q21)</div><div class="guardrail-answer">Processes sanctions lists and PEP data. Misclassification carries regulatory penalties. Auditable decision logs mandatory.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision (Q15)</div><div class="guardrail-answer">Agents may draft mitigation plans but must not autonomously blacklist or suspend vendors. Human procurement authority required.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
             </div>
         </div>
         <div class="mitigation-section"><div class="mitigation-title">Mitigation Strategy (Joint AI Security & Architecture Recommendation)</div>
@@ -423,7 +486,7 @@
     </div></div>
 
     <!-- ===== MODAL 7: RFX ===== -->
-    <div class="modal-overlay" id="modal-rfx" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="close-btn" onclick="document.getElementById('modal-rfx').classList.remove('active')">✕</button>
+    <div class="modal-overlay" id="modal-rfx" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="print-btn" onclick="window.print()">Print to PDF</button><button class="close-btn" onclick="document.getElementById('modal-rfx').classList.remove('active')">✕</button>
         <h1>Strategic RFx Evaluation (Tendering)</h1><h3>Future State Agentic Experience</h3>
         <p>Evaluating complex supplier proposals (RFPs) is a heavily manual reading exercise prone to human bias. The future state deploys specialized agents to parse unstructured vendor proposals and score them dynamically against complex procurement rubrics.</p>
         <div class="arch-infographic">
@@ -447,9 +510,9 @@
         </div>
         <div class="analysis-section"><div class="analysis-section-title">AI Governance & Compliance Guardrails</div>
             <div class="guardrails-container">
-                <div class="guardrail-row"><div class="guardrail-label">Pricing / Valuation</div><div class="guardrail-answer">Scoring directly influences high-value contract awards. AI confidence metrics and scoring weights must be fully transparent and pre-configured by Procurement.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Third-Party Data / IPR</div><div class="guardrail-answer">Ingests confidential vendor proposals. No cross-vendor data leakage permitted. Vendor submissions must not be used to train models.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Fairness / Bias</div><div class="guardrail-answer">Scoring rubrics must be audited for structural bias against SME or minority-owned businesses (UK Equality Act 2010).</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Pricing / Valuation (Q19)</div><div class="guardrail-answer">Scoring directly influences high-value contract awards. AI confidence metrics and scoring weights must be fully transparent and pre-configured by Procurement.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Third-Party Data / IPR (Q22)</div><div class="guardrail-answer">Ingests confidential vendor proposals. No cross-vendor data leakage permitted. Vendor submissions must not be used to train models.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Fairness / Bias (Q12)</div><div class="guardrail-answer">Scoring rubrics must be audited for structural bias against SME or minority-owned businesses (UK Equality Act 2010).</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
             </div>
         </div>
         <div class="mitigation-section"><div class="mitigation-title">Mitigation Strategy (Joint AI Security & Architecture Recommendation)</div>
@@ -463,7 +526,7 @@
     </div></div>
 
     <!-- ===== MODAL 8: FINANCIAL ===== -->
-    <div class="modal-overlay" id="modal-financial" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="close-btn" onclick="document.getElementById('modal-financial').classList.remove('active')">✕</button>
+    <div class="modal-overlay" id="modal-financial" onclick="closeModal(event)"><div class="modal-content" onclick="event.stopPropagation()"><button class="print-btn" onclick="window.print()">Print to PDF</button><button class="close-btn" onclick="document.getElementById('modal-financial').classList.remove('active')">✕</button>
         <h1>Autonomous Audit Commentary</h1><h3>Future State Agentic Experience</h3>
         <p>Building detailed commentary for PWC at half-year (HY) and full-year (FY) requires Finance teams to manually chase business owners for explanations on P&L variances. The Agentic solution acts as an autonomous financial analyst, spotting variances and retrieving context automatically.</p>
         <div class="arch-infographic">
@@ -487,10 +550,10 @@
         </div>
         <div class="analysis-section"><div class="analysis-section-title">AI Governance & Compliance Guardrails</div>
             <div class="guardrails-container">
-                <div class="guardrail-row"><div class="guardrail-label">Regulated Duty</div><div class="guardrail-answer">Critical. Commentary is submitted directly to PWC as part of the statutory audit. AI-hallucinated explanations would constitute a material misstatement risk.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision</div><div class="guardrail-answer">Strict HITL required. Financial Controller must review and approve every line before submission to PWC.</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Third-Party Reliance</div><div class="guardrail-answer">PWC directly relies on outputs. Cognizant must contractually disclaim outputs as "AI-assisted drafts subject to client validation."</div><div class="guardrail-verdict verdict-high">High</div></div>
-                <div class="guardrail-row"><div class="guardrail-label">Sensitive Data</div><div class="guardrail-answer">Accesses P&L data, internal emails, and potentially board-level financial strategy discussions. OFFICIAL-SENSITIVE data classification must be enforced.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Regulated Duty (Q14)</div><div class="guardrail-answer">Critical. Commentary is submitted directly to PWC as part of the statutory audit. AI-hallucinated explanations would constitute a material misstatement risk.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Autonomous Decision (Q15)</div><div class="guardrail-answer">Strict HITL required. Financial Controller must review and approve every line before submission to PWC.</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Third-Party Reliance (Q18)</div><div class="guardrail-answer">PWC directly relies on outputs. Cognizant must contractually disclaim outputs as "AI-assisted drafts subject to client validation."</div><div class="guardrail-verdict verdict-high">High</div></div>
+                <div class="guardrail-row"><div class="guardrail-label">Sensitive Data (Q6)</div><div class="guardrail-answer">Accesses P&L data, internal emails, and potentially board-level financial strategy discussions. OFFICIAL-SENSITIVE data classification must be enforced.</div><div class="guardrail-verdict verdict-medium">Medium</div></div>
             </div>
         </div>
         <div class="mitigation-section"><div class="mitigation-title">Mitigation Strategy (Joint AI Security & Architecture Recommendation)</div>
