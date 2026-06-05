@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASOS | Premium Agentic Architecture</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    
+    <style>
+        :root {
+            --asos-black: #000000;
+            --asos-white: #FFFFFF;
+            --asos-gray: #EEEEEE;
+            --asos-dark-gray: #333333;
+            --sor-border: #D1D5DB;
+            --gold: #F59E0B;
+            --gold-glow: rgba(245, 158, 11, 0.4);
+            --scanner: rgba(0, 120, 212, 0.6);
+            --ado-color: #0078D4;
+            --jira-color: #0052CC;
+            --conf-color: #172B4D;
+            --orch-color: #10B981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--asos-white); color: var(--asos-black); overflow-x: hidden; }
+
+        h1 { font-size: 4vw; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; }
+        h2 { font-size: 2.5vw; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 20px; }
+        p { font-size: 1.2vw; font-weight: 300; line-height: 1.6; color: var(--asos-dark-gray); }
+        
+        .section { height: 100vh; width: 100vw; position: relative; display: flex; align-items: center; justify-content: center; }
+
+        #pin-container { width: 100vw; height: 100vh; position: relative; overflow: hidden; background: #FAFAFA; }
+
+        .narrative-overlay { position: absolute; top: 50%; left: 5%; transform: translateY(-50%); width: 25vw; z-index: 100; }
+        .narrative-block { position: absolute; opacity: 0; visibility: hidden; background: rgba(255,255,255,0.9); padding: 30px; backdrop-filter: blur(10px); border-left: 4px solid var(--asos-black); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+
+        /* 3D Viewport */
+        #viewport { position: absolute; top: 0; right: 0; width: 70vw; height: 100vh; perspective: 2000px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        #camera { width: 100%; height: 100%; transform-style: preserve-3d; position: absolute; }
+
+        /* Premium Agent Avatars (Child Agents) */
+        .agent-node {
+            position: absolute; width: 30px; height: 30px; border-radius: 50%;
+            top: 50%; left: 50%; margin-top: -15px; margin-left: -15px;
+            z-index: 200; opacity: 0; transform-style: preserve-3d;
+            box-shadow: 0 0 15px currentColor; background: currentColor;
+        }
+        .agent-node::before {
+            content: ''; position: absolute; top: -10px; left: -10px; right: -10px; bottom: -10px;
+            border: 2px dashed currentColor; border-radius: 50%; animation: spin 4s linear infinite;
+        }
+        .agent-node::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: white; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite alternate;
+        }
+
+        #agent-ado { color: var(--ado-color); }
+        #agent-jira { color: var(--jira-color); }
+        #agent-conf { color: var(--conf-color); }
+
+        /* Premium Orchestrator */
+        #orchestrator {
+            width: 50px; height: 50px; color: var(--orch-color); position: absolute;
+            top: -50px; left: 50%; margin-left: -25px; transform: scale(0); opacity: 0;
+        }
+        #orchestrator::before { border-width: 3px; animation-duration: 3s; border-style: solid; border-color: transparent currentColor transparent currentColor; }
+        #orchestrator::after { background: var(--orch-color); box-shadow: 0 0 30px var(--orch-color); animation: pulse 1s ease-in-out infinite alternate; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(0.6); opacity: 0.8; } 100% { transform: scale(0.9); opacity: 1; } }
+
+        /* Systems of Record (SOR) Panels */
+        .sor-panel {
+            position: absolute; top: 50%; left: 50%; margin-top: -200px; margin-left: -150px;
+            width: 300px; height: 400px; background: var(--asos-white); border: 1px solid var(--sor-border);
+            border-radius: 6px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); transform-style: preserve-3d;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .sor-header { background: #F3F4F6; padding: 15px; font-weight: 800; font-size: 14px; text-transform: uppercase; border-bottom: 1px solid var(--sor-border); text-align: center; }
+        .sor-body { flex: 1; padding: 10px; position: relative; display: flex; flex-direction: column; gap: 8px;}
+        
+        .data-row {
+            background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 4px; padding: 12px; font-size: 11px;
+            color: #6B7280; transition: all 0.3s; position: relative;
+        }
+        .data-row.target { z-index: 50; }
+        
+        /* Agent Scanner Bar */
+        .scanner {
+            position: absolute; top: 0; left: 0; width: 100%; height: 20px; background: linear-gradient(to bottom, transparent, var(--scanner));
+            border-bottom: 2px solid #0078D4; opacity: 0; z-index: 20; box-shadow: 0 5px 15px var(--scanner);
+        }
+
+        /* Synthesis Core */
+        #synthesis-core {
+            position: absolute; top: 50%; left: 50%; margin-top: -100px; margin-left: -200px;
+            width: 400px; height: 200px; background: #111827; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            color: #10B981; font-family: monospace; padding: 20px; font-size: 14px; opacity: 0; transform: scale(0.8); z-index: 100;
+        }
+        .core-header { font-weight: bold; color: #9CA3AF; margin-bottom: 25px; border-bottom: 1px solid #374151; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;}
+        
+        /* MS Teams Exact Replica UI */
+        .teams-chat { 
+            position: absolute; top: 50%; left: 50%; margin-left: -190px; margin-top: -240px;
+            width: 380px; height: 480px; background: #FFFFFF; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+            border: 1px solid #EBEBEB; display: none; flex-direction: column; overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; opacity: 0; transform-style: preserve-3d;
+        }
+        
+        .ms-teams-header { height: 60px; border-bottom: 1px solid #EDEBE9; display: flex; align-items: center; padding: 0 16px; background: #FFFFFF; }
+        .ms-avatar-circle { width: 32px; height: 32px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; margin-right: 12px; position: relative; }
+        .ms-status-dot { position: absolute; bottom: -2px; right: -2px; width: 10px; height: 10px; background: #107C41; border: 2px solid white; border-radius: 50%; }
+        .ms-user-info { display: flex; flex-direction: column; flex: 1; }
+        .ms-user-name { font-size: 14px; font-weight: 600; color: #242424; line-height: 1.2; }
+        .ms-user-status { font-size: 12px; color: #616161; }
+        .ms-header-icons { color: #616161; font-size: 16px; font-weight: bold; letter-spacing: 2px; }
+        
+        .ms-teams-body { flex: 1; background: #F5F5F5; padding: 20px 16px; display: flex; flex-direction: column; justify-content: flex-end; }
+        
+        /* The message structure */
+        .ms-message-container { display: flex; margin-top: 15px; opacity: 0; transform: translateY(20px); }
+        .ms-bot-avatar { width: 32px; height: 32px; border-radius: 4px; background: #5B5FC7; color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-right: 12px; flex-shrink: 0; }
+        .ms-message-content { flex: 1; }
+        .ms-message-header { margin-bottom: 4px; display: flex; align-items: center; }
+        .ms-bot-name { font-size: 14px; font-weight: 600; color: #242424; margin-right: 6px; }
+        .ms-bot-tag { font-size: 10px; border: 1px solid #D1D1D1; color: #616161; padding: 0 4px; border-radius: 2px; margin-right: 8px; text-transform: uppercase; font-weight: bold;}
+        .ms-timestamp { font-size: 12px; color: #616161; }
+        
+        /* Adaptive Card */
+        .ms-adaptive-card { background: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 4px; display: flex; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .ms-card-stripe { width: 4px; flex-shrink: 0; }
+        .tech-stripe { background: #5B5FC7; }
+        .non-tech-stripe { background: #D97706; }
+        
+        .ms-card-body { padding: 12px; flex: 1; }
+        .ms-card-title { font-weight: 600; font-size: 14px; color: #242424; margin-bottom: 2px; }
+        .ms-card-subtitle { font-size: 12px; color: #616161; margin-bottom: 12px; }
+        .ms-card-text { font-size: 13px; color: #242424; line-height: 1.4; margin-bottom: 16px; background: #F5F5F5; padding: 10px; border-left: 2px solid #D1D1D1; }
+        
+        .ms-card-actions { display: flex; gap: 8px; }
+        .ms-btn-primary { background: #5B5FC7; color: white; border: none; border-radius: 4px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; flex: 1; transition: background 0.2s; }
+        .ms-btn-secondary { background: #FFFFFF; color: #242424; border: 1px solid #D1D1D1; border-radius: 4px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; flex: 1; }
+        
+        .ms-teams-compose { height: 60px; padding: 10px 16px; background: #FFFFFF; border-top: 1px solid #EDEBE9; display: flex; align-items: center; }
+        .ms-compose-input { background: #F5F5F5; border-radius: 4px; border: 1px solid #E0E0E0; width: 100%; height: 36px; padding: 0 12px; display: flex; align-items: center; color: #616161; font-size: 13px; }
+
+        /* Internal Dashboard & Dossiers */
+        #eydash { 
+            position: absolute; top: 50%; left: 50%; width: 800px; min-height: 500px; max-height: 80vh; overflow-y: auto; 
+            border: 1px solid var(--asos-gray); margin-left: -400px; transform: translateY(-50%); padding: 30px; 
+            background: #FAFAFA; border-radius: 8px; box-shadow: 0 30px 60px rgba(0,0,0,0.2); opacity: 0; 
+            transform-style: preserve-3d; display: none; z-index: 500;
+        }
+        .dashboard-header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--asos-black); padding-bottom: 20px; margin-bottom: 20px; }
+        
+        .ey-row-container { border-bottom: 1px solid #E5E7EB; border-radius: 4px; cursor: pointer; transition: background 0.2s; margin-bottom: 5px; }
+        .ey-row-container:hover { background: #F3F4F6; }
+        .table-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; font-size: 14px; }
+        .row-icon { font-size: 10px; color: #9CA3AF; transition: transform 0.3s; display: inline-block; }
+        .ey-row-container.open .row-icon { transform: rotate(90deg); }
+        
+        /* Interactive Dossier Content */
+        .dossier-content { display: none; padding: 25px; background: #FFFFFF; border: 1px solid #E5E7EB; border-left: 4px solid #107C41; margin: 0 10px 15px 10px; border-radius: 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .dossier-content.active { display: block; animation: fadeInDown 0.3s ease-out; }
+        
+        .dossier-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .dossier-section { margin-bottom: 20px; }
+        .dossier-section h4 { font-size: 11px; text-transform: uppercase; color: #6B7280; letter-spacing: 0.5px; margin-bottom: 8px; border-bottom: 1px solid #E5E7EB; padding-bottom: 4px; }
+        .dossier-section p { font-size: 13px; color: #111827; margin-bottom: 15px; line-height: 1.6; }
+        
+        .audit-trail { font-family: 'Courier New', Courier, monospace; font-size: 11px; background: #111827; color: #10B981; padding: 15px; border-radius: 4px; line-height: 1.5; }
+        .log-line { display: block; margin-bottom: 4px; }
+        .log-tag { color: #9CA3AF; }
+
+        .hitl-action-bar { margin-top: 20px; padding-top: 20px; border-top: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center; }
+        .hitl-status { font-size: 12px; color: #6B7280; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .btn-authorize { background: #111827; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+        .btn-authorize:hover { background: #374151; }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Final Polish Screen */
+        #final-screen { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(250, 250, 250, 0.95); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; visibility: hidden; backdrop-filter: blur(10px); }
+        .progress-container { position: fixed; top: 0; left: 0; width: 100vw; height: 4px; z-index: 1000; background: rgba(0,0,0,0.1); }
+        .progress-bar { height: 100%; width: 0%; background: var(--asos-black); }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container"><div class="progress-bar" id="progress"></div></div>
+
+    <!-- FIXED HEADER -->
+    <header style="position: fixed; top: 0; left: 0; width: 100vw; height: 80px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 2000; border-bottom: 1px solid var(--asos-gray); display: flex; align-items: center; justify-content: space-between; padding: 0 40px;">
+        <div style="display: flex; align-items: center; gap: 30px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Asos.svg" alt="ASOS Logo" style="height: 30px; object-fit: contain;">
+            <div style="height: 30px; width: 1px; background: #CCC;"></div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/Cognizant_logo_2022.svg" alt="Cognizant Logo" style="height: 30px; object-fit: contain;">
+        </div>
+        <div style="font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--asos-dark-gray);">
+            ASOS Agentic AI - FDE Model
+        </div>
+    </header>
+
+    <div class="section">
+        <div style="text-align: center; margin-top: 80px;">
+            <h1 style="font-size: 4vw; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase;">ASOS RDE Claims</h1>
+            <h2 style="font-size: 2vw; font-weight: 300; letter-spacing: 0; margin-top: 10px; color: var(--asos-dark-gray);">An Agentic AI Approach to Deterministic Fact Generation</h2>
+            <p style="margin-top: 40px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800;">Scroll Down to Initiate</p>
+        </div>
+    </div>
+
+    <div id="pin-container">
+        <!-- Narratives -->
+        <div class="narrative-overlay">
+            <div class="narrative-block" id="nar-1">
+                <h2>1. The Agent Roster</h2>
+                <p>Enterprise data is highly siloed. To solve this, specialized <strong>Child Agents</strong> are deployed directly over each System of Record (ADO, Jira, Confluence). They act as localized expert extractors.</p>
+            </div>
+            <div class="narrative-block" id="nar-2">
+                <h2>2. Synchronized Crawling</h2>
+                <p>The Child Agents patrol their domains autonomously. Using semantic analysis, they scan hundreds of routine tasks to identify the hidden 'golden' rows indicating technological uncertainty.</p>
+            </div>
+            <div class="narrative-block" id="nar-3">
+                <h2>3. Orchestrator Synthesis</h2>
+                <p>The Child Agents physically extract the golden facts and carry them back to the <strong>Central Orchestrator</strong> (The Frontman). The Orchestrator ingests the fragmented data and synthesizes multiple HMRC narratives simultaneously.</p>
+            </div>
+            <div class="narrative-block" id="nar-4">
+                <h2>4. Autonomous Direct Routing</h2>
+                <p>The Orchestrator seamlessly pushes the drafted narrative cards (Both Tech and Non-Tech) directly into 1-on-1 MS Teams Direct Messages with the specific Engineer or Product Owner for a 1-click confirmation.</p>
+            </div>
+            <div class="narrative-block" id="nar-5">
+                <h2>5. Human-in-the-Loop Gateway</h2>
+                <p>The ASOS Internal Finance Team acts as a critical governance layer. They review the mathematically guaranteed provenance within the Assurance Hub before formally authorizing the transmission of the Evidence Pack to EY (External Auditors).</p>
+            </div>
+        </div>
+
+        <!-- 3D Viewport -->
+        <div id="viewport">
+            <div id="camera">
+                
+                <!-- Child Agents -->
+                <div class="agent-node" id="agent-ado"></div>
+                <div class="agent-node" id="agent-jira"></div>
+                <div class="agent-node" id="agent-conf"></div>
+
+                <!-- Panel 1: ADO -->
+                <div class="sor-panel" id="panel-ado">
+                    <div class="sor-header" style="color: #0078D4;">Azure DevOps (Tech)</div>
+                    <div class="sor-body">
+                        <div class="scanner" id="scan-ado"></div>
+                        <div class="data-row">Task 4490: Update CSS on product page</div>
+                        <div class="data-row target" id="target-ado-2"><strong>Task 4491:</strong> Refactor Auth Microservices for Scale</div>
+                        <div class="data-row target" id="target-ado"><strong>Task 4492:</strong> Implement concurrent Kafka pipeline</div>
+                        <div class="data-row">Task 4493: Routine dependency update</div>
+                    </div>
+                </div>
+
+                <!-- Panel 2: Jira -->
+                <div class="sor-panel" id="panel-jira">
+                    <div class="sor-header" style="color: #0052CC;">Jira (Planning)</div>
+                    <div class="sor-body">
+                        <div class="scanner" id="scan-jira"></div>
+                        <div class="data-row target" id="target-jira-2"><strong>Epic CAP-86:</strong> Identity Access Management (ASOS-99Y)</div>
+                        <div class="data-row target" id="target-jira"><strong>Epic CAP-88:</strong> Global Checkout Redesign (ASOS-99X)</div>
+                        <div class="data-row">Epic CAP-89: GDPR Compliance Update</div>
+                    </div>
+                </div>
+
+                <!-- Panel 3: Confluence -->
+                <div class="sor-panel" id="panel-conf">
+                    <div class="sor-header" style="color: #172B4D;">Confluence (Non-Tech)</div>
+                    <div class="sor-body">
+                        <div class="scanner" id="scan-conf"></div>
+                        <div class="data-row">Doc: Q3 Marketing Brief</div>
+                        <div class="data-row">Doc: Onboarding Guide for Devs</div>
+                        <div class="data-row target" id="target-conf"><strong>Doc:</strong> Sustainable Dye Stress Testing & Baseline Evaluation</div>
+                    </div>
+                </div>
+
+                <!-- Synthesis Core & Orchestrator -->
+                <div id="synthesis-core">
+                    <div class="agent-node" id="orchestrator"></div>
+                    <div class="core-header">Agentic Orchestrator Hub</div>
+                    <div id="typewriter-text"></div>
+                </div>
+
+                <!-- MS Teams UI (Exact Replica Mockups) -->
+                
+                <!-- Chat 1: Sarah (Tech) -->
+                <div class="teams-chat" id="teams-1">
+                    <div class="ms-teams-header">
+                        <div class="ms-avatar-circle" style="background: #D98880;">SM<div class="ms-status-dot"></div></div>
+                        <div class="ms-user-info">
+                            <div class="ms-user-name">Sarah M. (Dev Lead)</div>
+                            <div class="ms-user-status">Available</div>
+                        </div>
+                        <div class="ms-header-icons">...</div>
+                    </div>
+                    <div class="ms-teams-body">
+                        <div class="ms-message-container">
+                            <div class="ms-bot-avatar">🤖</div>
+                            <div class="ms-message-content">
+                                <div class="ms-message-header">
+                                    <span class="ms-bot-name">RDEC Co-Pilot</span><span class="ms-bot-tag">Bot</span><span class="ms-timestamp">14:32</span>
+                                </div>
+                                <div class="ms-adaptive-card">
+                                    <div class="ms-card-stripe tech-stripe"></div>
+                                    <div class="ms-card-body">
+                                        <div class="ms-card-title">Fact Validation Required</div>
+                                        <div class="ms-card-subtitle">Tech Claim (ASOS-99X)</div>
+                                        <div class="ms-card-text">"Implemented highly concurrent Kafka pipeline to bypass standard architectural throughput limitations."</div>
+                                        <div class="ms-card-actions">
+                                            <button class="ms-btn-primary" onclick="this.innerHTML='Confirmed ✓'; this.style.background='#107C41';">Confirm Fact</button>
+                                            <button class="ms-btn-secondary">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ms-teams-compose"><div class="ms-compose-input">Type a message...</div></div>
+                </div>
+
+                <!-- Chat 2: David (Tech) -->
+                <div class="teams-chat" id="teams-2">
+                    <div class="ms-teams-header">
+                        <div class="ms-avatar-circle" style="background: #5DADE2;">DP<div class="ms-status-dot"></div></div>
+                        <div class="ms-user-info">
+                            <div class="ms-user-name">David P. (Arch Lead)</div>
+                            <div class="ms-user-status">Available</div>
+                        </div>
+                        <div class="ms-header-icons">...</div>
+                    </div>
+                    <div class="ms-teams-body">
+                        <div class="ms-message-container">
+                            <div class="ms-bot-avatar">🤖</div>
+                            <div class="ms-message-content">
+                                <div class="ms-message-header">
+                                    <span class="ms-bot-name">RDEC Co-Pilot</span><span class="ms-bot-tag">Bot</span><span class="ms-timestamp">14:32</span>
+                                </div>
+                                <div class="ms-adaptive-card">
+                                    <div class="ms-card-stripe tech-stripe"></div>
+                                    <div class="ms-card-body">
+                                        <div class="ms-card-title">Fact Validation Required</div>
+                                        <div class="ms-card-subtitle">Tech Claim (ASOS-99Y)</div>
+                                        <div class="ms-card-text">"Refactored IAM microservices to resolve algorithmic latency at massive scale."</div>
+                                        <div class="ms-card-actions">
+                                            <button class="ms-btn-primary" onclick="this.innerHTML='Confirmed ✓'; this.style.background='#107C41';">Confirm Fact</button>
+                                            <button class="ms-btn-secondary">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ms-teams-compose"><div class="ms-compose-input">Type a message...</div></div>
+                </div>
+
+                <!-- Chat 3: Alex (Non-Tech) -->
+                <div class="teams-chat" id="teams-3">
+                    <div class="ms-teams-header">
+                        <div class="ms-avatar-circle" style="background: #F4D03F; color: #333;">AL<div class="ms-status-dot"></div></div>
+                        <div class="ms-user-info">
+                            <div class="ms-user-name">Alex L. (Product)</div>
+                            <div class="ms-user-status">Available</div>
+                        </div>
+                        <div class="ms-header-icons">...</div>
+                    </div>
+                    <div class="ms-teams-body">
+                        <div class="ms-message-container">
+                            <div class="ms-bot-avatar">🤖</div>
+                            <div class="ms-message-content">
+                                <div class="ms-message-header">
+                                    <span class="ms-bot-name">RDEC Co-Pilot</span><span class="ms-bot-tag">Bot</span><span class="ms-timestamp">14:32</span>
+                                </div>
+                                <div class="ms-adaptive-card">
+                                    <div class="ms-card-stripe non-tech-stripe"></div>
+                                    <div class="ms-card-body">
+                                        <div class="ms-card-title">Fact Validation Required</div>
+                                        <div class="ms-card-subtitle">Non-Tech Claim (OpEx)</div>
+                                        <div class="ms-card-text">"Iterative chemical stress testing to resolve scientific uncertainty regarding organic dye colorfastness."</div>
+                                        <div class="ms-card-actions">
+                                            <button class="ms-btn-primary" onclick="this.innerHTML='Confirmed ✓'; this.style.background='#107C41';">Confirm Fact</button>
+                                            <button class="ms-btn-secondary">Reject</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ms-teams-compose"><div class="ms-compose-input">Type a message...</div></div>
+                </div>
+
+                <!-- ASOS Internal Dashboard (Interactive Dossiers) -->
+                <div id="eydash">
+                    <div class="dashboard-header">
+                        <div style="font-weight: 800; font-size: 24px; text-transform: uppercase;">Internal Assurance Hub</div>
+                        <div><span style="font-weight: 600;">Role:</span> ASOS Finance & Tax Lead</div>
+                    </div>
+                    
+                    <div style="background: #F3F4F6; padding: 15px; border-left: 4px solid #107C41; margin-bottom: 20px; font-size: 13px; color: #4B5563; line-height: 1.5;">
+                        <strong>HITL Verification Required:</strong> Review the system-derived evidence packs below. Once validated, you may authorize the formal transmission of the cryptographic dossiers to our external auditors (EY).
+                    </div>
+
+                    <!-- Row 1: Tech Claim -->
+                    <div class="ey-row-container" onclick="toggleDossier('doss-1', this)">
+                        <div class="table-row">
+                            <div style="width: 5%;"><span class="row-icon">▶</span></div>
+                            <div style="width: 15%; font-weight: 600;">ASOS-99X</div>
+                            <div style="width: 50%; color: #666;">Concurrent Kafka architecture scaling...</div>
+                            <div style="width: 30%; font-weight: 600; color: #107C41; text-align: right;">✓ Pending Review</div>
+                        </div>
+                        <div class="dossier-content" id="doss-1">
+                            <div class="dossier-grid">
+                                <div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: Technological Baseline</h4>
+                                        <p>Standard architectural throughput limited to 5k TPS using legacy RESTful polling.</p>
+                                    </div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: Scientific Uncertainty</h4>
+                                        <p>Algorithmic latency in high-volume, concurrent event streams causing data loss during peak sale events.</p>
+                                    </div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: The Advancement</h4>
+                                        <p>Developed custom distributed partition-key routing algorithms within a Kafka topology to bypass standard limitations.</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="dossier-section">
+                                        <h4>System: Immutable Provenance Log</h4>
+                                        <div class="audit-trail">
+                                            <span class="log-line"><span class="log-tag">[SOR_LINK]</span> Jira Epic CAP-88</span>
+                                            <span class="log-line"><span class="log-tag">[SOR_LINK]</span> ADO Task 4492</span>
+                                            <span class="log-line"><span class="log-tag">[ACTOR]</span> Sarah M. (Dev Lead)</span>
+                                            <span class="log-line"><span class="log-tag">[ACTION]</span> Confirmed Fact via Teams</span>
+                                            <span class="log-line"><span class="log-tag">[TIMESTAMP]</span> 2026-06-05T14:32:00Z</span>
+                                            <span class="log-line"><span class="log-tag">[SHA-256]</span> 9e8f7b...2a1c</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- HITL Gateway Action -->
+                            <div class="hitl-action-bar">
+                                <div class="hitl-status">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                    Internal Governance Check
+                                </div>
+                                <button class="btn-authorize" onclick="event.stopPropagation(); this.innerHTML='Transmission Authorized ✓'; this.style.background='#107C41';">Authorize & Send to EY</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Tech Claim 2 -->
+                    <div class="ey-row-container" onclick="toggleDossier('doss-2', this)">
+                        <div class="table-row">
+                            <div style="width: 5%;"><span class="row-icon">▶</span></div>
+                            <div style="width: 15%; font-weight: 600;">ASOS-99Y</div>
+                            <div style="width: 50%; color: #666;">IAM microservices refactor...</div>
+                            <div style="width: 30%; font-weight: 600; color: #107C41; text-align: right;">✓ Pending Review</div>
+                        </div>
+                        <div class="dossier-content" id="doss-2">
+                            <div class="dossier-grid">
+                                <div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: Technological Baseline</h4>
+                                        <p>Legacy monolithic identity provider failing under 1M+ concurrent user loads.</p>
+                                    </div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: Scientific Uncertainty</h4>
+                                        <p>Database lock contention and token generation latency across geographically distributed data centers.</p>
+                                    </div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: The Advancement</h4>
+                                        <p>Engineered a novel stateless token-validation algorithm reducing database dependency by 85%.</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="dossier-section">
+                                        <h4>System: Immutable Provenance Log</h4>
+                                        <div class="audit-trail">
+                                            <span class="log-line"><span class="log-tag">[SOR_LINK]</span> Jira Epic CAP-86</span>
+                                            <span class="log-line"><span class="log-tag">[SOR_LINK]</span> ADO Task 4491</span>
+                                            <span class="log-line"><span class="log-tag">[ACTOR]</span> David P. (Arch Lead)</span>
+                                            <span class="log-line"><span class="log-tag">[ACTION]</span> Confirmed Fact via Teams</span>
+                                            <span class="log-line"><span class="log-tag">[TIMESTAMP]</span> 2026-06-05T14:35:12Z</span>
+                                            <span class="log-line"><span class="log-tag">[SHA-256]</span> a1b2c3...f9d8</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- HITL Gateway Action -->
+                            <div class="hitl-action-bar">
+                                <div class="hitl-status">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                    Internal Governance Check
+                                </div>
+                                <button class="btn-authorize" onclick="event.stopPropagation(); this.innerHTML='Transmission Authorized ✓'; this.style.background='#107C41';">Authorize & Send to EY</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Non-Tech Claim -->
+                    <div class="ey-row-container" onclick="toggleDossier('doss-3', this)">
+                        <div class="table-row">
+                            <div style="width: 5%;"><span class="row-icon">▶</span></div>
+                            <div style="width: 15%; font-weight: 600;">OpEx-Dye</div>
+                            <div style="width: 50%; color: #666;">Organic dye chemical stress testing...</div>
+                            <div style="width: 30%; font-weight: 600; color: #107C41; text-align: right;">✓ Pending Review</div>
+                        </div>
+                        <div class="dossier-content" id="doss-3">
+                            <div class="dossier-grid">
+                                <div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: Technological Baseline</h4>
+                                        <p>Standard synthetic dyes pollute water supplies; organic alternatives lack industry-standard colorfastness data.</p>
+                                    </div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: Scientific Uncertainty</h4>
+                                        <p>Unpredictable chemical reaction of new organic compounds under high-heat industrial washing environments.</p>
+                                    </div>
+                                    <div class="dossier-section">
+                                        <h4>HMRC: The Advancement</h4>
+                                        <p>Executed 500+ iterative stress tests to document molecular degradation rates, establishing a new scientific baseline for sustainable fabric coloring.</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="dossier-section">
+                                        <h4>System: Immutable Provenance Log</h4>
+                                        <div class="audit-trail">
+                                            <span class="log-line"><span class="log-tag">[SOR_LINK]</span> Confluence Doc (ID: 9912)</span>
+                                            <span class="log-line"><span class="log-tag">[ACTOR]</span> Alex L. (Product)</span>
+                                            <span class="log-line"><span class="log-tag">[ACTION]</span> Confirmed Fact via Teams</span>
+                                            <span class="log-line"><span class="log-tag">[TIMESTAMP]</span> 2026-06-05T14:40:05Z</span>
+                                            <span class="log-line"><span class="log-tag">[SHA-256]</span> 4x5y6z...8a7b</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- HITL Gateway Action -->
+                            <div class="hitl-action-bar">
+                                <div class="hitl-status">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                    Internal Governance Check
+                                </div>
+                                <button class="btn-authorize" onclick="event.stopPropagation(); this.innerHTML='Transmission Authorized ✓'; this.style.background='#107C41';">Authorize & Send to EY</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- Final Polish Screen -->
+        <div id="final-screen">
+            <h1 style="font-size: 3vw; color: #107C41; margin-bottom: 20px;">✓ GOVERNANCE WORKFLOW COMPLETE</h1>
+            <p style="font-size: 1.2vw;">The Agentic Swarm successfully identified, verified, and audited the claim via HITL oversight.</p>
+        </div>
+    </div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+        // Dossier Interaction Logic
+        function toggleDossier(id, element) {
+            const dossier = document.getElementById(id);
+            if (dossier.classList.contains('active')) {
+                dossier.classList.remove('active');
+                element.classList.remove('open');
+            } else {
+                // Close others
+                document.querySelectorAll('.dossier-content').forEach(d => d.classList.remove('active'));
+                document.querySelectorAll('.ey-row-container').forEach(r => r.classList.remove('open'));
+                dossier.classList.add('active');
+                element.classList.add('open');
+            }
+        }
+
+        gsap.set("#panel-ado", { x: -450, z: -200, rotationY: 15 });
+        gsap.set("#panel-jira", { x: 0, z: 0, rotationY: 0 });
+        gsap.set("#panel-conf", { x: 450, z: -200, rotationY: -15 });
+
+        gsap.set("#agent-ado", { x: -450, y: -250, z: -200, rotationY: 15 });
+        gsap.set("#agent-jira", { x: 0, y: -250, z: 0, rotationY: 0 });
+        gsap.set("#agent-conf", { x: 450, y: -250, z: -200, rotationY: -15 });
+
+        gsap.to("#progress", { width: "100%", ease: "none", scrollTrigger: { scrub: 0.3 } });
+
+        const tl = gsap.timeline({
+            scrollTrigger: { trigger: "#pin-container", start: "top top", end: "+=9000", scrub: 1, pin: true, anticipatePin: 1 }
+        });
+
+        gsap.set("#camera", { z: 800 });
+
+        // Scene 1: Disconnected Systems & The Agent Roster
+        tl.to("#camera", { z: 200, duration: 2, ease: "power2.out" })
+          .to("#nar-1", { autoAlpha: 1, y: 0, duration: 1 }, "<0.5")
+          .to(".agent-node:not(#orchestrator)", { autoAlpha: 1, y: -230, duration: 1, ease: "sine.inOut", yoyo: true, repeat: 1 }, "<") 
+          .to({}, {duration: 1.5}); 
+
+        // Scene 2: Synchronized Crawling
+        tl.to("#nar-1", { autoAlpha: 0, y: -20, duration: 1 })
+          .to("#nar-2", { autoAlpha: 1, y: 0, duration: 1 }, "<")
+          .to(".scanner", { autoAlpha: 1, top: "100%", duration: 2, ease: "linear", stagger: 0.2 }, "<")
+          .to("#agent-ado", { y: -50, duration: 2, ease: "power1.inOut" }, "<")
+          .to("#agent-jira", { y: -100, duration: 2, ease: "power1.inOut" }, "<0.2")
+          .to("#agent-conf", { y: 50, duration: 2, ease: "power1.inOut" }, "<0.4")
+          
+          .to(".target", { 
+              backgroundColor: "var(--gold)", color: "#FFF", borderColor: "var(--gold)", 
+              boxShadow: "0 0 20px var(--gold-glow)", duration: 0.5 
+          }, "<1.5")
+          .to(".scanner", { autoAlpha: 0, duration: 0.5 }, ">")
+          .to({}, {duration: 1.5}); 
+
+        // Scene 3: Orchestrator Synthesis
+        tl.to("#nar-2", { autoAlpha: 0, y: -20, duration: 1 })
+          .to("#nar-3", { autoAlpha: 1, y: 0, duration: 1 }, "<")
+          .to("#synthesis-core", { autoAlpha: 1, scale: 1, duration: 1, ease: "back.out(1.5)" }, "<")
+          .to("#orchestrator", { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2)" }, "<0.5")
+          
+          .to(".target", { x: 0, y: 100, z: 200, scale: 0.3, opacity: 0, duration: 1.5, ease: "power2.inOut", stagger: 0.1 }, "<0.5")
+          .to(".agent-node:not(#orchestrator)", { keyframes: [{x: 0, y: -50, z: 100}], scale: 0.5, opacity: 0, duration: 1.5, ease: "power2.inOut" }, "<")
+          
+          .to(".sor-panel", { opacity: 0.1, duration: 1 }, "<0.5")
+          .to("#orchestrator", { scale: 1.5, boxShadow: "0 0 60px #10B981", duration: 0.5, yoyo: true, repeat: 3 }, "<1")
+          .to("#typewriter-text", { text: "> Processing multiple claim workflows... <br>> 2x Tech, 1x Non-Tech.<br>> Drafting HMRC Justifications... <br>> Routing to respective Direct Messages...", duration: 2.5, ease: "none" }, ">")
+          .to({}, {duration: 1.5}); 
+
+        // Scene 4: Ambient Delivery to Teams (Routed to Exact Replica Mockups)
+        tl.to("#nar-3", { autoAlpha: 0, y: -20, duration: 1 })
+          .to("#nar-4", { autoAlpha: 1, y: 0, duration: 1 }, "<")
+          .to("#synthesis-core", { scale: 0.5, autoAlpha: 0, duration: 1, ease: "power2.in" }, "<")
+          
+          .set("#teams-1", { display: "flex", x: -450, z: -300, y: 0 })
+          .set("#teams-2", { display: "flex", x: 0, z: -100, y: 0 })
+          .set("#teams-3", { display: "flex", x: 450, z: -300, y: 0 })
+          
+          .to(".teams-chat", { autoAlpha: 1, z: 0, y: 0, duration: 1.5, ease: "back.out(1.2)", stagger: 0.2 }, "<0.5")
+          .to(".ms-message-container", { opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.5)", stagger: 0.3 }, ">")
+          .to({}, {duration: 1.5}); 
+
+        // Scene 5: ASOS Internal Assurance Dashboard
+        tl.to("#nar-4", { autoAlpha: 0, y: -20, duration: 1 })
+          .to("#nar-5", { autoAlpha: 1, y: 0, duration: 1 }, "<")
+          .to(".teams-chat", { z: -800, y: 300, opacity: 0, duration: 1.5, ease: "power3.inOut" }, "<")
+          .set("#eydash", { display: "block", z: 500, x: 200, rotationY: -15 })
+          .to("#eydash", { autoAlpha: 1, z: 0, x: 0, rotationY: 0, duration: 1.5, ease: "back.out(1.2)" }, "<0.2")
+          .to({}, {duration: 3}); // Longer hold to allow user to click dossiers
+          
+        // Scene 6: Final Screen
+        tl.to("#nar-5", { autoAlpha: 0, y: -20, duration: 1 })
+          .to("#eydash", { opacity: 0.3, duration: 1 }, "<")
+          .to("#final-screen", { autoAlpha: 1, duration: 1.5, ease: "power2.out" }, "<0.5")
+          .to({}, {duration: 2}); 
+
+    </script>
+</body>
+</html>
