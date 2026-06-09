@@ -155,6 +155,14 @@
                     <td><span class="badge bg-yellow">⏳ NEW</span></td>
                     <td>Wire orchestration into Azure Application Insights and Foundry Tracing for tool call and token telemetry.</td>
                 </tr>
+                <tr>
+                    <td class="ref-col">3.4</td>
+                    <td><strong>End-to-End U2M & Unified Agent Routing</strong></td>
+                    <td>09-Jun-2026</td>
+                    <td>09-Jun-2026</td>
+                    <td><span class="badge bg-yellow">⏳ NEW</span></td>
+                    <td>Route both flows through the unified Azure AI Foundry Agent. Chat uses U2M tokens with Genie MCP; Monday Brief uses M2M tokens with deterministic DBSQL tools and retry logic.</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -183,10 +191,10 @@
                 <span class="priority-badge priority-critical">Priority: Critical</span>
                 <span class="urgency-badge urgency-immediate">Urgency: Immediate</span>
             </div>
-            <p>Currently, <code>dbsql</code> is running off those hardcoded <code>.sql</code> files. It's solid for the initial demo, but it completely handcuffs the LLM. The agent can't answer anything outside of the queries you've pre-written.</p>
+            <p>Currently, <code>dbsql</code> is running off those hardcoded <code>.sql</code> files. While those static queries are perfect for the deterministic Monday Brief batch job, they completely handcuff the LLM in a live chat scenario. The chat agent can't answer anything outside of the queries you've pre-written.</p>
             <div class="implementation-box">
                 <h4>Next Steps:</h4>
-                <p>We need to deprecate the <code>queries/</code> folder. However, we shouldn't let the agent write raw SQL on the fly—that's far too non-deterministic and opens us up to hallucinations or runaway compute costs. The right approach is to wire up the relevant Databricks Genie MCPs directly into the Foundry agent definition. Let the agent use the Genie tools to safely query our curated semantic models and trusted assets. This gives us the flexibility of an LLM with the deterministic accuracy the trading floor requires.</p>
+                <p>We need to deprecate the use of the static <code>queries/</code> folder <strong>for interactive chat</strong>. However, we shouldn't let the agent write raw SQL on the fly—that's far too non-deterministic and opens us up to hallucinations. The right approach for the live chat is to wire up the Databricks Genie MCPs directly into the Foundry agent definition. Let the chat agent use the Genie tools to safely query our curated semantic models. (We will retain the static SQL solely as a specialized tool for the Monday Brief batch job, as detailed in Section 3.4).</p>
             </div>
 
             <!-- 2.2 -->
@@ -213,6 +221,8 @@
                 <p>Let's break this into a tabbed view (Fluent 2 components are fine for this). Keep the top KPI strip persistent, and put Sales, Margin, and Logistics into their own tabs. Also, pull the Chat into a persistent side panel so they can ask questions while looking directly at the data.</p>
             </div>
 
+
+
             <h2>3. Aligning with Frontier Agentic Patterns (Azure-Native)</h2>
             <p>To ensure Aurora AI isn't just a basic LLM wrapper, we need to adopt the latest architecture patterns from Anthropic, OpenAI, and Microsoft. Crucially, because we are an Azure shop, we must execute these patterns using native Azure components to maintain our compliance and security boundaries.</p>
 
@@ -238,6 +248,48 @@
             <div class="implementation-box">
                 <h4>Next Steps:</h4>
                 <p>Wire the orchestration layer directly into <strong>Azure Application Insights</strong> and <strong>Azure AI Foundry Tracing</strong>. Every MCP tool call, prompt execution, and agent handoff must be logged with its exact token usage and latency. This is the only way we can debug the "black box" when a trader reports an incorrect response.</p>
+            </div>
+
+            <!-- 3.4 -->
+            <h3>3.4. End-to-End User-to-Machine (U2M) Governance</h3>
+            <div>
+                <span class="priority-badge">Priority: High</span>
+                <span class="urgency-badge">Urgency: High</span>
+            </div>
+            <p>Based on the review with the ASOS architecture team, we have a great opportunity to finalize our Databricks authentication model. Currently, the data layer relies on a shared credential (such as a static PAT or generic Service Principal) to execute queries. While moving to a formal Service Principal (M2M) architecture is the right path for the background Monday Brief generation, we cannot use that pattern for the live chat. Relying on a shared credential for interactive chat obscures user-level visibility in Databricks Unity Catalog. It bypasses Row-Level Security (RLS) and prevents the business from leveraging their free per-user DBU allowances.</p>
+            <div class="implementation-box">
+                <h4>Suggested Implementation Approach:</h4>
+                <p>To align with enterprise governance, let's transition the interactive chat to a User-to-Machine (U2M) flow. Since the inbound Entra ID JWT validation is already complete, we just need to extend it:</p>
+                <ol>
+                    <li><strong>The OBO Token Exchange:</strong> We can use <code>@azure/msal-node</code> to take the validated inbound JWT and call <code>acquireTokenOnBehalfOf()</code>, swapping it for a U2M Databricks token.</li>
+                    <li><strong>Unified Agent Routing with Specialized Tools:</strong> Both the interactive live chat and the background Monday Brief generation will be routed through the Azure AI Foundry Agent, ensuring a unified orchestration layer. However, they will use specialized tools:
+                        <ul style="margin-top: 8px; margin-bottom: 8px;">
+                            <li><strong>Live Chat (Dynamic):</strong> Uses the Databricks Genie Room MCP tool to dynamically convert trader intent into secure semantic queries.</li>
+                            <li><strong>Monday Brief (Deterministic):</strong> Retains the <code>DBSQLClient</code>, but wraps it as a dedicated "DBSQL Execution Tool" for the agent. This ensures the batch process runs the exact same static, deterministic SQL every week, wrapped in proper exponential backoff and retry logic.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Contextual Token Injection (U2M vs M2M):</strong> The token injected into the tool execution context must vary by route. For the Live Chat (Genie MCP), inject the newly swapped <strong>U2M token</strong> so queries run natively under the trader's identity. For the Monday Brief (DBSQL Tool), use <code>DefaultAzureCredential</code> to acquire a formal <strong>M2M Service Principal token</strong>.</li>
+                    <li><strong>Agentic Prompt Boundaries:</strong> To maintain trust in the metrics, let's update the system prompt to ensure the agent acts strictly as a presentation layer, avoiding any recalculation of the facts returned by Databricks Genie.</li>
+                </ol>
+                <p><strong>Example MSAL OBO Setup:</strong></p>
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 6px; overflow-x: auto; font-family: monospace; font-size: 0.9em; line-height: 1.4;"><code>import { ConfidentialClientApplication, OnBehalfOfRequest } from '@azure/msal-node';
+
+const cca = new ConfidentialClientApplication({
+    auth: {
+        clientId: process.env.AZURE_CLIENT_ID,
+        authority: `https://login.microsoftonline.com/${process.env.AZURE_TENANT_ID}`,
+        clientSecret: process.env.AZURE_CLIENT_SECRET, 
+    }
+});
+
+export async function getDatabricksU2MToken(inboundJwt: string): Promise&lt;string&gt; {
+    const oboRequest: OnBehalfOfRequest = {
+        oboAssertion: inboundJwt,
+        scopes: ["2ff814a6-3304-4ab8-85cb-cd0e6f879c1d/.default"], // Azure Databricks App ID
+    };
+    const response = await cca.acquireTokenOnBehalfOf(oboRequest);
+    return response.accessToken;
+}</code></pre>
             </div>
 
             <h2>4. Closing Thoughts</h2>
